@@ -1,0 +1,20 @@
+/* src/index.css */
+@import "tailwindcss";
+
+/* Optional: project-specific customizations */
+:root {
+  --bear-brown:  #8d6e63;
+  --polar-white: #fef9f6;
+  --panda-black: #3e2723;
+  --honey:       #fff3cd;
+  --grizz-red:   #c62828;
+  --ice-blue:    #e3f2fd;
+}
+
+/* Global styling */
+body {
+  font-family: var(--font-main);
+  color: var(--bear-brown);
+  -webkit-font-smoothing: antialiased;
+}
+
