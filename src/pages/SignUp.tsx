@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { supabase } from '../lib/supabase';
+import { Link } from 'react-router-dom';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -97,7 +98,7 @@ export default function Signup() {
 
         <p className="text-center text-sm opacity-70">
           Already have an account?{' '}
-          <a href="/login" className="underline">Log in</a>
+          <Link to="/login" className="underline">Log in</Link>
         </p>
       </form>
     </div>
