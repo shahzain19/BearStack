@@ -1,9 +1,10 @@
 // components/ProtectedRoute.tsx
+import React from "react";
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-export default function ProtectedRoute({ children }: { children: JSX.Element }) {
+export default function ProtectedRoute({ children }: { children: React.JSX.Element }) {
   const [checking, setChecking] = useState(true);
   const [session, setSession] = useState<any>(null);
 

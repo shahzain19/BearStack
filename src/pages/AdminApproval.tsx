@@ -1,5 +1,5 @@
 // AdminApprovalPage.tsx
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import BookCard from '../components/BookCard';
@@ -157,7 +157,7 @@ export default function AdminApprovalPage() {
                 outerRadius={90}
                 label
               >
-                {genreData.map((entry, index) => (
+                {genreData.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={["#d1bfa7", "#f7d9b0", "#b8e0d2", "#eec3c3", "#c9c6ec"][(index % 5)]}
@@ -249,7 +249,15 @@ export default function AdminApprovalPage() {
   );
 }
 
-function InsightCard({ icon, label, count }: { icon: JSX.Element; label: string; count: number }) {
+function InsightCard({
+  icon,
+  label,
+  count,
+}: {
+  icon: React.JSX.Element;
+  label: string;
+  count: number;
+}) {
   return (
     <div className="bg-honey/40 rounded-2xl shadow-md p-5 flex items-center gap-4 border border-yellow-100">
       <div className="text-bearBrown text-2xl">{icon}</div>
