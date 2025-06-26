@@ -34,9 +34,10 @@ export default function Library() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserRole = async () => {
+    const fetchUserRoleAndCreatedAt = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -44,17 +45,18 @@ export default function Library() {
       if (user) {
         const { data, error } = await supabase
           .from("profiles")
-          .select("role")
+          .select("role, created_at")
           .eq("id", user.id)
           .single();
 
         if (!error && data) {
           setUserRole(data.role);
+          setUserCreatedAt(data.created_at);
         }
       }
     };
 
-    fetchUserRole();
+    fetchUserRoleAndCreatedAt();
   }, []);
 
   useEffect(() => {
@@ -85,8 +87,19 @@ export default function Library() {
   const filteredBooks = useMemo(() => {
     let result = books;
 
-    // ✅ Only include approved books
-    result = result.filter((book) => book.is_accepted === "yes");
+    result = result.filter((book) => {
+      const isApproved = book.is_accepted === "yes";
+      if (!isApproved) return false;
+
+      if (!userCreatedAt) return true;
+
+      const bookCreatedAt = book.created_at
+        ? new Date(book.created_at).getTime()
+        : 0;
+      const userCreated = new Date(userCreatedAt).getTime();
+
+      return bookCreatedAt <= userCreated || bookCreatedAt > userCreated;
+    });
 
     if (query) {
       result = result.filter((book) =>
@@ -109,14 +122,14 @@ export default function Library() {
     });
 
     return result;
-  }, [books, query, selectedGenre, sortOrder, showFavorites]);
+  }, [books, query, selectedGenre, sortOrder, showFavorites, userCreatedAt]);
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <h1 className="text-4xl font-semibold text-bearBrown inline gap-4">
-        <img src="/icon.png" alt="BearStacks Logo" className="inline gap-6 w-12 h-12" />
+          <img src="/icon.png" alt="BearStacks Logo" className="inline gap-6 w-12 h-12" />
           BearStacks
         </h1>
         <div className="flex gap-3 flex-wrap">
