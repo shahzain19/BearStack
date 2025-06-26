@@ -1,23 +1,32 @@
+import { useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 
 export default function Login() {
   const navigate = useNavigate();
 
+  // On mount: check if already logged in (session exists)
   useEffect(() => {
     const checkSession = async () => {
       const {
-        data: { session }
+        data: { session },
       } = await supabase.auth.getSession();
-      if (session) navigate('/');
+
+      if (session) {
+        navigate('/');
+      }
     };
+
     checkSession();
   }, [navigate]);
 
+  // Trigger Google OAuth login
   async function handleGoogleLogin() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        redirectTo: window.location.origin, // works in dev & prod
+      },
     });
   }
 
