@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Login from "./pages/Login";
-import Signup from "./pages/SignUp";
 import Library from "./pages/Library";
 import BookDetails from "./pages/BookDetails";
 import ReaderPage from "./pages/ReaderPage";
@@ -23,7 +22,6 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
 
           {/* 🔒 Protected Routes */}
           <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />

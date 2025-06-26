@@ -35,9 +35,6 @@ export default function Landing() {
             <Link to="/login" className="hover:underline">
               Login
             </Link>
-            <Link to="/signup" className="hover:underline">
-              Sign up
-            </Link>
           </nav>
         )}
       </header>
@@ -52,7 +49,7 @@ export default function Landing() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <Link
-            to="/signup"
+            to="/login"
             className="bg-bearBrown hover:bg-pandaBlack text-polarWhite font-semibold px-6 py-3 rounded-full shadow transition"
           >
             Get Started It's Free!
