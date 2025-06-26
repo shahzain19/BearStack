@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Login from "./pages/Login";
@@ -12,11 +12,27 @@ import AuthorPublicPage from "./pages/AuthorPublicPage";
 import BookmarksPage from "./pages/BookmarksPage";
 import AdminApprovalPage from "./pages/AdminApproval";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { inject, track } from "@vercel/analytics";
+import { useEffect } from "react";
+
+inject();
+
+// Component to track page views on route change
+function AnalyticsTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    track("pageview");
+  }, [location]);
+
+  return null;
+}
 
 export default function App() {
   return (
     <div className="min-h-screen">
       <Router>
+         <AnalyticsTracker />
         <Routes>
           {/* 🟢 Public Routes */}
           <Route path="/" element={<Home />} />

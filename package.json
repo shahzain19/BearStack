@@ -16,6 +16,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@supabase/supabase-js": "^2.50.0",
     "@uiw/react-split": "^5.9.3",
+    "@vercel/analytics": "^1.5.0",
     "bad-words": "^4.0.0",
     "clsx": "^2.1.1",
     "dompurify": "^3.2.6",
