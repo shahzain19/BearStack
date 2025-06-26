@@ -18,9 +18,6 @@ export default function Login() {
   async function handleGoogleLogin() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.origin // Redirects back to your site after login
-      }
     });
   }
 
