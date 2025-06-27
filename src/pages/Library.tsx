@@ -235,13 +235,6 @@ export default function Library() {
           <X size={16} />
           Clear Filters
         </button>
-        <Link
-          to="/new"
-          className="flex items-center gap-2 text-sm px-4 py-2 rounded-full hover:opacity-90 shadow-md transition"
-        >
-          <Plus size={16} />
-          Add Book
-        </Link>
       </div>
 
       {/* Genre Chips */}
