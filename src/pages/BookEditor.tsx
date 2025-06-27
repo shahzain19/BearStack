@@ -145,35 +145,38 @@ export default function BookEditor({ mode }: BookEditorProps) {
   };
 
   const containsMultilingualProfanity = async (
-    ...texts: string[]
-  ): Promise<boolean> => {
-    try {
-      const prompt = `You are a strict content moderator. Check if the following contains any inappropriate language in any language. Respond only with "true" or "false".\n\n${texts.join(
-        "\n---\n"
-      )}`;
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  ...texts: string[]
+): Promise<boolean> => {
+  try {
+    const prompt = `You are a content moderation system for a PG-16 audience. Check if the following content includes **strong profanity**, **explicit sexual content**, or **hate speech** in any language. 
+Mild language or light slang is acceptable. Only respond with "true" if the content is too inappropriate for a PG-16 audience. Otherwise, respond with "false".
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-          }),
-        }
-      );
+${texts.join("\n---\n")}`;
 
-      const result = await response.json();
-      const reply = result?.candidates?.[0]?.content?.parts?.[0]?.text
-        ?.trim()
-        .toLowerCase();
-      return reply === "true";
-    } catch (err) {
-      console.warn("Gemini profanity check failed", err);
-      return false;
-    }
-  };
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      }
+    );
+
+    const result = await response.json();
+    const reply = result?.candidates?.[0]?.content?.parts?.[0]?.text
+      ?.trim()
+      .toLowerCase();
+    return reply === "true";
+  } catch (err) {
+    console.warn("Gemini profanity check failed", err);
+    return false;
+  }
+};
+
 
   const getOrCreateAuthor = async () => {
     const {
