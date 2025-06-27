@@ -14,6 +14,9 @@ import AdminApprovalPage from "./pages/AdminApproval";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { inject, track } from "@vercel/analytics";
 import { useEffect } from "react";
+import Blog from "./pages/Blog";
+import NewBlog from "./pages/NewBlog";
+import BlogReader from "./pages/BlogReader";
 
 inject();
 
@@ -38,6 +41,10 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/new" element={<NewBlog />} />
+          <Route path="/blog/:slug" element={<BlogReader />} />
+
 
           {/* 🔒 Protected Routes */}
           <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
