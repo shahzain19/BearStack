@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset 
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bear-stack-nmnr.vercel.app/</loc>
-  </url>
-  <url>
-    <loc>https://bear-stack-nmnr.vercel.app/about</loc>
   </url>
   <url>
     <loc>https://bear-stack-nmnr.vercel.app/library</loc>
   </url>
   <url>
-    <loc>https://bear-stack-nmnr.vercel.app/login</loc>
+    <loc>https://bear-stack-nmnr.vercel.app/bookmarks</loc>
+  </url>
+  <url>
+    <loc>https://bear-stack-nmnr.vercel.app/blog</loc>
   </url>
 </urlset>
