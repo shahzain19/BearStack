@@ -1,4 +1,18 @@
 {
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/robots.txt"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/sitemap.xml",
@@ -8,23 +22,6 @@
           "value": "application/xml"
         }
       ]
-    }
-  ],
-  "routes": [
-    {
-      "src": "/sitemap.xml",
-      "headers": {
-        "Content-Type": "application/xml"
-      },
-      "continue": true
-    },
-    {
-      "src": "/robots.txt",
-      "continue": true
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
     }
   ]
 }
