@@ -22,10 +22,10 @@ export default function NewBlog() {
           .eq("id", userId)
           .single();
 
-        if (error) {
-          console.error("Error fetching role", error);
+        if (!error) {
+          setRole(data?.role ?? null);
         } else {
-          setRole(data?.role || null);
+          console.error("Error fetching role:", error);
         }
       }
     };
@@ -50,50 +50,53 @@ export default function NewBlog() {
       author_id: session?.user?.id,
     });
 
-    if (!error) {
-      navigate(`/blog/${slug}`);
-    } else {
-      console.error("Error posting blog:", error.message);
-    }
+    if (!error) navigate(`/blog/${slug}`);
+    else console.error("Error posting blog:", error.message);
   };
 
-  if (role === null) {
-    return <div className="text-center py-20">You are not admin...</div>;
-  }
+  if (role === null)
+    return <div className="text-center py-20 text-gray-600">Checking role...</div>;
 
-  if (role !== "admin") {
+  if (role !== "admin")
     return (
-      <div className="text-center py-20 text-red-500">
-        🚫 You do not have access to write blogs.
+      <div className="text-center py-20 text-red-500 font-medium">
+        🚫 Only admins can publish blogs.
       </div>
     );
-  }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-20">
-      <h1 className="text-3xl font-bold mb-6">New Blog Post</h1>
+    <div className="max-w-4xl mx-auto px-6 py-20">
+      <div className="mb-12 text-center">
+        <h1 className="text-4xl font-bold tracking-tight mb-2">Write a New Blog</h1>
+        <p className="text-gray-500 text-sm">
+          Start sharing your thoughts with the world, one story at a time.
+        </p>
+      </div>
 
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Blog title"
-        className="w-full p-3 border rounded mb-4"
-      />
+      <div className="flex flex-col gap-8">
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          className="text-3xl font-semibold placeholder-gray-400 focus:outline-none border-b pb-3"
+        />
 
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Blog content (Markdown or plain text)"
-        rows={15}
-        className="w-full p-3 border rounded mb-6"
-      />
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Tell your story..."
+          className="w-full h-[400px] placeholder-gray-400 text-lg leading-relaxed focus:outline-none resize-none"
+        />
 
-      <button
-        onClick={handleSubmit}
-        className="bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition"
-      >
-        Publish Blog
-      </button>
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={handleSubmit}
+            className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition"
+          >
+            Publish
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
