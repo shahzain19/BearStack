@@ -21,6 +21,7 @@ import {
   englishDataset,
   englishRecommendedTransformers,
 } from "obscenity";
+import TiptapEditor from "../components/TipTapEditor";
 
 const matcher = new RegExpMatcher({
   ...englishDataset.build(),
@@ -49,6 +50,8 @@ export default function BookEditor({ mode }: BookEditorProps) {
   const [previewMode, setPreviewMode] = useState<PreviewMode>("split");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("classic");
   const [unsaved, setUnsaved] = useState(false);
+  type EditMode = "markdown" | "rich";
+  const [editMode, setEditMode] = useState<EditMode>("markdown");
 
   const wordCount = useMemo(
     () => content.trim().split(/\s+/).filter(Boolean).length,
@@ -145,38 +148,37 @@ export default function BookEditor({ mode }: BookEditorProps) {
   };
 
   const containsMultilingualProfanity = async (
-  ...texts: string[]
-): Promise<boolean> => {
-  try {
-    const prompt = `You are a content moderation system for a PG-16 audience. Check if the following content includes **strong profanity**, **explicit sexual content**, or **hate speech** in any language. 
+    ...texts: string[]
+  ): Promise<boolean> => {
+    try {
+      const prompt = `You are a content moderation system for a PG-16 audience. Check if the following content includes **strong profanity**, **explicit sexual content**, or **hate speech** in any language. 
 Mild language or light slang is acceptable. Only respond with "true" if the content is too inappropriate for a PG-16 audience. Otherwise, respond with "false".
 
 ${texts.join("\n---\n")}`;
 
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-        }),
-      }
-    );
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+          }),
+        }
+      );
 
-    const result = await response.json();
-    const reply = result?.candidates?.[0]?.content?.parts?.[0]?.text
-      ?.trim()
-      .toLowerCase();
-    return reply === "true";
-  } catch (err) {
-    console.warn("Gemini profanity check failed", err);
-    return false;
-  }
-};
-
+      const result = await response.json();
+      const reply = result?.candidates?.[0]?.content?.parts?.[0]?.text
+        ?.trim()
+        .toLowerCase();
+      return reply === "true";
+    } catch (err) {
+      console.warn("Gemini profanity check failed", err);
+      return false;
+    }
+  };
 
   const getOrCreateAuthor = async () => {
     const {
@@ -273,7 +275,7 @@ ${texts.join("\n---\n")}`;
     );
   }
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 font-poppins">
+    <section className="mx-auto max-w-7xl px-4 py-8 font-[Inter]">
       {/* Header & buttons */}
       <header className="mb-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
@@ -334,6 +336,15 @@ ${texts.join("\n---\n")}`;
           >
             <Split className="h-4 w-4" />
           </button>
+          <select
+            className="rounded-full border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm"
+            value={editMode}
+            onChange={(e) => setEditMode(e.target.value as EditMode)}
+          >
+            <option value="markdown">Markdown</option>
+            <option value="rich">Rich Text</option>
+          </select>
+
           <button
             onClick={() => handleSave(false)}
             className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-[#f0f0f0] shadow-md hover:scale-105 transition"
@@ -360,7 +371,7 @@ ${texts.join("\n---\n")}`;
             <label className="flex flex-col gap-1">
               <span className="font-semibold text-gray-700">Title *</span>
               <input
-                className="rounded-xl border p-3 shadow-inner"
+                className="rounded-xl border p-3 border-gray-300 shadow-inner shadow-md"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
@@ -368,7 +379,7 @@ ${texts.join("\n---\n")}`;
             <label className="flex flex-col gap-1">
               <span className="font-semibold text-gray-700">Genre</span>
               <input
-                className="rounded-xl border p-3 shadow-inner"
+                className="rounded-xl border p-3 border-gray-300 shadow-md"
                 value={genre}
                 onChange={(e) => setGenre(e.target.value)}
                 placeholder="e.g., Cozy Mystery"
@@ -377,7 +388,7 @@ ${texts.join("\n---\n")}`;
             <label className="flex flex-col gap-1">
               <span className="font-semibold text-gray-700">Summary *</span>
               <textarea
-                className="h-28 resize-none rounded-xl border p-3 shadow-inner"
+                className="h-28 resize-none rounded-xl border border-gray-300 p-3 shadow-md"
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
               />
@@ -430,14 +441,32 @@ ${texts.join("\n---\n")}`;
         >
           {(previewMode === "write" || previewMode === "split") && (
             <Fragment>
-              <textarea
-                className="min-h-[300px] w-full flex-1 resize-y rounded-xl border border-gray-200 p-4 font-mono text-sm shadow-inner"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Start typing your story using Markdown…"
-              />
-              <div className="flex justify-end text-sm text-gray-500">
-                {wordCount} words • {charCount} characters
+              {editMode === "markdown" ? (
+                <textarea
+                  className="min-h-[300px] w-full flex-1 resize-y rounded-xl border border-gray-200 p-4 font-mono text-sm shadow-inner"
+                  value={content}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                    setUnsaved(true);
+                  }}
+                  placeholder="Start typing your story using Markdown…"
+                />
+              ) : (
+                <TiptapEditor
+                  content={content}
+                  setContent={(val) => {
+                    setContent(val);
+                    setUnsaved(true);
+                  }}
+                />
+              )}
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>
+                  {editMode === "markdown" ? "Markdown mode" : "Rich Text mode"}
+                </span>
+                <span>
+                  {wordCount} words • {charCount} characters
+                </span>
               </div>
             </Fragment>
           )}
@@ -448,12 +477,20 @@ ${texts.join("\n---\n")}`;
                 Live Preview
               </h2>
               <div className="prose max-w-none">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight]}
-                >
-                  {content || "*Start typing your story…*"}
-                </ReactMarkdown>
+                {editMode === "markdown" ? (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeHighlight]}
+                  >
+                    {content || "*Start typing your story…*"}
+                  </ReactMarkdown>
+                ) : (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(content),
+                    }}
+                  />
+                )}
               </div>
             </div>
           )}

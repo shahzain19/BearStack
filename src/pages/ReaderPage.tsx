@@ -10,6 +10,7 @@ import { useBooks } from '../hooks/useBooks';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeRaw from 'rehype-raw';
 import {
   ArrowLeft,
   Minus,
@@ -171,11 +172,11 @@ export default function BookReader() {
                 <div
                   key={index}
                   style={{ fontSize }}
-                  className="prose prose-lg max-w-none font-serif prose-headings:text-bearBrown bg-white rounded-xl p-6 shadow-md border border-[#e9dec5] transition-all"
+                  className="prose prose-lg max-w-none font-serif prose-headings:text-bearBrown prose-img:rounded-xl prose-a:text-bearBrown hover:prose-a:underline bg-white rounded-xl p-6 shadow-md border border-[#e9dec5] transition-all"
                 >
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeHighlight]}
+                    rehypePlugins={[rehypeHighlight, rehypeRaw]}
                   >
                     {content}
                   </ReactMarkdown>
@@ -188,11 +189,11 @@ export default function BookReader() {
             <div className="w-full max-w-screen-md animate-fadeIn">
               <div
                 style={{ fontSize }}
-                className="prose prose-lg max-w-none font-serif prose-headings:text-bearBrown bg-white rounded-xl p-6 shadow-md border border-[#e9dec5] transition-all"
+                className="prose prose-lg max-w-none font-serif prose-headings:text-bearBrown prose-img:rounded-xl prose-a:text-bearBrown hover:prose-a:underline bg-white rounded-xl p-6 shadow-md border border-[#e9dec5] transition-all"
               >
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight]}
+                  rehypePlugins={[rehypeHighlight, rehypeRaw]}
                 >
                   {pages[currentPage] || ''}
                 </ReactMarkdown>
@@ -208,11 +209,11 @@ export default function BookReader() {
                   <div
                     key={offset}
                     style={{ fontSize }}
-                    className="flip-card animate-page prose prose-lg max-w-none font-serif prose-headings:text-bearBrown bg-white rounded-xl p-6 shadow-md border border-[#e9dec5] transition-all min-h-[20rem]"
+                    className="flip-card animate-page prose prose-lg max-w-none font-serif prose-headings:text-bearBrown prose-img:rounded-xl prose-a:text-bearBrown hover:prose-a:underline bg-white rounded-xl p-6 shadow-md border border-[#e9dec5] transition-all min-h-[20rem]"
                   >
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypeHighlight]}
+                      rehypePlugins={[rehypeHighlight, rehypeRaw]}
                     >
                       {content || ''}
                     </ReactMarkdown>
