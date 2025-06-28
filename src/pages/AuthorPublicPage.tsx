@@ -6,7 +6,7 @@ import type { Author } from "../models/Book";
 import BookCard from "../components/BookCard";
 
 export default function AuthorPage() {
-  const { id } = useParams(); // this is the author's ID (text)
+  const { id } = useParams(); // This is the author's ID (text)
   const [author, setAuthor] = useState<Author | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,18 +15,18 @@ export default function AuthorPage() {
     async function load() {
       setLoading(true);
 
-      // Get the author by id (text)
+      // Fetch the author by id (text)
       const { data: authorData } = await supabase
         .from("authors")
         .select("*")
         .eq("id", id)
         .single();
 
-      // Get books where book.author === author.id
+      // Fetch books where book.author === author.id
       const { data: booksData } = await supabase
         .from("books")
         .select("*")
-        .eq("author", id) // author is a text field storing the author's id
+        .eq("author", id)
         .order("created_at", { ascending: false });
 
       setAuthor(authorData ?? null);
@@ -37,28 +37,43 @@ export default function AuthorPage() {
     load();
   }, [id]);
 
-  if (!author) return <p className="p-6 text-center">Author not found.</p>;
+  // Fallback if loading
+  if (loading && !author) {
+    return <p className="p-6 text-center">Loading author...</p>;
+  }
+
+  // Fallback if author not found
+  if (!author && !loading) {
+    return (
+      <div className="p-6 text-center">
+        <img
+          src="https://illustrations.popsy.co/gray/ghost.svg"
+          alt="Not found"
+          className="w-40 mx-auto mb-4"
+        />
+        <p className="text-xl font-semibold">Author not found.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10">
       {/* Author Info */}
       <div className="flex flex-col md:flex-row items-center gap-6 bg-[#fdfbf7] p-6 rounded-xl shadow">
         <img
-          src={author.avatar_url || "/default-avatar.png"}
-          alt={author.pen_name}
+          src={author?.avatar_url || "/default-avatar.png"}
+          alt={author?.pen_name}
           className="w-24 h-24 rounded-full object-cover border"
         />
         <div className="text-center md:text-left space-y-2">
-          <h1 className="text-3xl font-bold text-bearBrown">
-            {author.pen_name}
-          </h1>
+          <h1 className="text-3xl font-bold text-bearBrown">{author?.pen_name}</h1>
           <p className="text-gray-700 whitespace-pre-line">
-            {author.bio || "No bio available."}
+            {author?.bio || "No bio available."}
           </p>
         </div>
       </div>
 
-      {/* Books */}
+      {/* Books List */}
       <div>
         {loading ? (
           <p className="text-center">Loading books…</p>
