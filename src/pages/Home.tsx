@@ -4,7 +4,6 @@ import { supabase } from "../lib/supabase";
 import {
   BookOpen,
   Info,
-  Library,
   LayoutDashboard,
   PenLine,
   X,
