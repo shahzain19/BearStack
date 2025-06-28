@@ -30,7 +30,7 @@ export default function CreateNookPage() {
       .insert({
         title,
         description,
-        creator_id: user.id,
+        created_by: user.id,
         tags,
       })
       .select()
