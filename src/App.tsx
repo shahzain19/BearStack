@@ -47,7 +47,7 @@ export default function App() {
 
 
           {/* 🔒 Protected Routes */}
-          <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
+          <Route path="/library" element={<Library /> } />
           <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />
           <Route path="/book/:id" element={<ProtectedRoute><BookDetails /></ProtectedRoute>} />
           <Route path="/read/:id" element={<ProtectedRoute><ReaderPage /></ProtectedRoute>} />
