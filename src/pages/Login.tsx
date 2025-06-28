@@ -1,34 +1,39 @@
-import { useEffect } from 'react';
-import { supabase } from '../lib/supabase';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 
 export default function Login() {
   const navigate = useNavigate();
 
-  // On mount: check if already logged in (session exists)
   useEffect(() => {
     const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data, error } = await supabase.auth.getSession();
 
-      if (session) {
-        navigate('/');
+      if (error) {
+        console.error("Error checking session:", error.message);
+        return;
+      }
+
+      if (data.session) {
+        navigate("/");
       }
     };
 
     checkSession();
   }, [navigate]);
 
-  // Trigger Google OAuth login
-  async function handleGoogleLogin() {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin, // works in dev & prod
-      },
-    });
-  }
+  const handleGoogleLogin = async () => {
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin, // Ensures smooth return in dev/prod
+        },
+      });
+    } catch (err: any) {
+      console.error("Google login error:", err.message);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-honey">

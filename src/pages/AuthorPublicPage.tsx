@@ -6,43 +6,59 @@ import type { Author } from "../models/Book";
 import BookCard from "../components/BookCard";
 
 export default function AuthorPage() {
-  const { id } = useParams(); // This is the author's ID (text)
+  const { id } = useParams(); // Author ID from the URL
   const [author, setAuthor] = useState<Author | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
+      setError(null);
 
-      // Fetch the author by id (text)
-      const { data: authorData } = await supabase
-        .from("authors")
-        .select("*")
-        .eq("id", id)
-        .single();
+      try {
+        const { data: authorData, error: authorErr } = await supabase
+          .from("authors")
+          .select("*")
+          .eq("id", id)
+          .single();
 
-      // Fetch books where book.author === author.id
-      const { data: booksData } = await supabase
-        .from("books")
-        .select("*")
-        .eq("author", id)
-        .order("created_at", { ascending: false });
+        if (authorErr) throw authorErr;
 
-      setAuthor(authorData ?? null);
-      setBooks(booksData ?? []);
-      setLoading(false);
+        const { data: booksData, error: booksErr } = await supabase
+          .from("books")
+          .select("*")
+          .eq("author", id)
+          .order("created_at", { ascending: false });
+
+        if (booksErr) throw booksErr;
+
+        setAuthor(authorData ?? null);
+        setBooks(booksData ?? []);
+      } catch (err: any) {
+        console.error(err);
+        setError("Something went wrong while loading author data.");
+      } finally {
+        setLoading(false);
+      }
     }
 
     load();
   }, [id]);
 
-  // Fallback if loading
   if (loading && !author) {
     return <p className="p-6 text-center">Loading author...</p>;
   }
 
-  // Fallback if author not found
+  if (error) {
+    return (
+      <div className="p-6 text-center text-red-600">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   if (!author && !loading) {
     return (
       <div className="p-6 text-center">
