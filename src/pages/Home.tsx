@@ -1,18 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import {
-  BookOpen,
-  Info,
-  LayoutDashboard,
-  PenLine,
-  X,
-} from "lucide-react";
+import { BookOpen, Info, LayoutDashboard, PenLine, X } from "lucide-react";
 
 export default function Landing() {
   const [session, setSession] = useState<null | unknown>(null);
   const [checking, setChecking] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [blogs, setBlogs] = useState<any[]>([]);
+  const [blogsLoading, setBlogsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      const { data, error } = await supabase
+        .from("blogs")
+        .select("title, slug, content")
+        .order("created_at", { ascending: false })
+        .limit(4); // latest 3 blogs
+
+      if (!error && data) setBlogs(data);
+      setBlogsLoading(false);
+    };
+
+    fetchBlogs();
+  }, []);
 
   const iconMap = {
     Library: <BookOpen className="w-4 h-4 mr-1" />,
@@ -202,7 +213,7 @@ export default function Landing() {
 
       {/* Features */}
       <section className="bg-white py-20 px-4 text-center">
-        <h3 className="text-3xl font-bold mb-12">🌟 Features You’ll Love</h3>
+        <h3 className="text-3xl font-bold mb-12">Features You'll Love</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto text-left text-sm">
           {[
             {
@@ -235,7 +246,7 @@ export default function Landing() {
 
       {/* Books of the Month */}
       <section className="bg-[#fffef7] py-20 px-4 text-center">
-        <h3 className="text-3xl font-bold mb-8">📚 Books of the Month</h3>
+        <h3 className="text-9xl font-extrabold mb-8 tracking-[-10px]">Books of the Month</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {["1750840837967.png", "1750702725861.png", "1750688847649.png"].map(
             (cover) => (
@@ -246,6 +257,51 @@ export default function Landing() {
               />
             )
           )}
+        </div>
+      </section>
+
+      <section className="bg-white py-20 px-4 text-center">
+        
+        <h3 className="text-8xl font-bold mb-8 tracking-[-4px]">From the <span className="text-amber-700"> BearStacks </span>Blog</h3>
+        <p className="text-sm max-w-xl mx-auto mb-12 opacity-80">
+          Fresh thoughts, cozy advice, and writing insights from the BearStacks
+          community.
+        </p>
+
+        {blogsLoading ? (
+          <p className="text-gray-500 text-sm">Loading blogs...</p>
+        ) : blogs.length === 0 ? (
+          <p className="text-gray-500 text-sm">
+            No blog posts yet. Check back soon!
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-6xl mx-auto text-left font-[Inter]">
+            {blogs.map((blog) => (
+              <Link
+                key={blog.slug}
+                to={`/blog/${blog.slug}`}
+                className="rounded-xl overflow-hidden border border-gray-200 shadow-md hover:scale-[1.02] transition group bg-white"
+              >
+                <div className="p-4">
+                  <h4 className="text-xl font-semibold mb-1">{blog.title}</h4>
+                  <div
+        className="prose prose-lg max-w-none"
+        dangerouslySetInnerHTML={{ __html: blog.content.slice(0, 200) + "..." }}
+      />
+
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-10">
+          <Link
+            to="/blog"
+            className="text-amber-700 hover:text-black transition text-sm underline font-medium"
+          >
+            View All Blog Posts →
+          </Link>
         </div>
       </section>
 

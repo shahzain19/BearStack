@@ -22,6 +22,7 @@ import {
   englishRecommendedTransformers,
 } from "obscenity";
 import TiptapEditor from "../components/TipTapEditor";
+import GenreSelector from "../components/GenreSelector";
 
 const matcher = new RegExpMatcher({
   ...englishDataset.build(),
@@ -376,15 +377,11 @@ ${texts.join("\n---\n")}`;
                 onChange={(e) => setTitle(e.target.value)}
               />
             </label>
-            <label className="flex flex-col gap-1">
-              <span className="font-semibold text-gray-700">Genre</span>
-              <input
-                className="rounded-xl border p-3 border-gray-300 shadow-md"
-                value={genre}
-                onChange={(e) => setGenre(e.target.value)}
-                placeholder="e.g., Cozy Mystery"
-              />
-            </label>
+
+            
+            <GenreSelector genre={genre} setGenre={setGenre} />
+              
+
             <label className="flex flex-col gap-1">
               <span className="font-semibold text-gray-700">Summary *</span>
               <textarea

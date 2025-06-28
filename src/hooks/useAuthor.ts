@@ -1,25 +1,37 @@
-import { useState, useEffect } from 'react';
+// hooks/useAuthor.ts
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import type { Author } from '../models/Book';
 
-export function useAuthor(id?: string) {
-  const [author, setAuthor] = useState<Author | null>(null);
-  const [loading, setLoading] = useState(true);
+interface AuthorData {
+  pen_name: string | null;
+  profile_pic: string | null;
+}
+
+export function useAuthor(authorId?: string) {
+  const [author, setAuthor] = useState<AuthorData | null>(null);
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      const { data, error } = id
-        ? await supabase.from('authors').select('*').eq('id', id).single()
-        : await supabase          // fetch my author profile
-            .from('authors')
-            .select('*')
-            .eq('user_id', (await supabase.auth.getUser()).data.user?.id!)
-            .single();
-      setAuthor(error ? null : (data as Author));
-      setLoading(false);
-    })();
-  }, [id]);
+    if (!authorId) return;
 
-  return { author, loading };
+    supabase
+      .from('authors')
+      .select('pen_name, avatar_url')
+      .eq('id', authorId)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setAuthor({
+            pen_name: data.pen_name ?? 'Unknown Author',
+            profile_pic: data.avatar_url,
+          });
+        } else {
+          setAuthor({
+            pen_name: 'Unknown Author',
+            profile_pic: null,
+          });
+        }
+      });
+  }, [authorId]);
+
+  return author;
 }

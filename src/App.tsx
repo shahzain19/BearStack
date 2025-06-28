@@ -17,6 +17,9 @@ import { useEffect } from "react";
 import Blog from "./pages/Blog";
 import NewBlog from "./pages/NewBlog";
 import BlogReader from "./pages/BlogReader";
+import NooksPage from "./pages/NooksPage";
+import CreateNookPage from "./pages/CreateNookPage";
+import NookDetailPage from "./pages/NookDetailPage";
 
 inject();
 
@@ -45,10 +48,13 @@ export default function App() {
           <Route path="/blog/new" element={<NewBlog />} />
           <Route path="/blog/:slug" element={<BlogReader />} />
 
-
           {/* 🔒 Protected Routes */}
           <Route path="/library" element={<Library /> } />
-          <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />
+
+          <Route path="/nooks" element={<NooksPage />} />
+          <Route path="/nook/create" element={<CreateNookPage />} />
+          <Route path="/nook/:id" element={<NookDetailPage />} />
+          <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />  
           <Route path="/book/:id" element={<ProtectedRoute><BookDetails /></ProtectedRoute>} />
           <Route path="/read/:id" element={<ProtectedRoute><ReaderPage /></ProtectedRoute>} />
           <Route path="/author/:id" element={<AuthorPublicPage />} />

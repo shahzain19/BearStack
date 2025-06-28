@@ -3,6 +3,7 @@ export interface Book {
   id: string;
   title: string;
   author: string;
+  author_pen_name?: string; // ← NEW
   summary: string;
   cover_url: string;
   created_at?: string;
