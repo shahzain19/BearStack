@@ -51,7 +51,7 @@ export default function App() {
           <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />
           <Route path="/book/:id" element={<ProtectedRoute><BookDetails /></ProtectedRoute>} />
           <Route path="/read/:id" element={<ProtectedRoute><ReaderPage /></ProtectedRoute>} />
-          <Route path="/author/:id" element={<ProtectedRoute><AuthorPublicPage /></ProtectedRoute>} />
+          <Route path="/author/:id" element={<AuthorPublicPage />} />
           <Route path="/admin-approval" element={<ProtectedRoute><AdminApprovalPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><AuthorDashboard /></ProtectedRoute>} />
           <Route path="/dashboard/profile" element={<ProtectedRoute><AuthorProfileForm /></ProtectedRoute>} />

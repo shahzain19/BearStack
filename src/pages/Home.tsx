@@ -48,18 +48,6 @@ export default function Landing() {
           <img src="/icon.png" alt="BearStacks Logo" className="w-8 h-8" />
           <h1 className="text-2xl font-bold tracking-tight">BearStacks</h1>
         </div>
-
-        {!session && (
-          <nav>
-            <Link
-              to="/login"
-              className="bg-amber-700 hover:bg-amber-600 text-white text-sm font-semibold px-6 py-2 rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 inline-flex items-center gap-2"
-            >
-              <Library className="w-6 h-6 inline justify-center" />
-              Login
-            </Link>
-          </nav>
-        )}
       </header>
 
       {/* Hero */}
