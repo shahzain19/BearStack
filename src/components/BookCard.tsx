@@ -16,7 +16,7 @@ export default function BookCard({
   book,
   className = "",
 }: BookCardProps) {
-  const author = useAuthor(book.author);
+  const { author } = useAuthor(book.author);
 
   return (
     <div className={`relative ${className}`}>
@@ -44,9 +44,9 @@ export default function BookCard({
           {/* Author Info with Profile Pic */}
           <div className="flex justify-between items-center mt-3">
             <div className="flex items-center gap-2 text-left">
-              {author?.profile_pic ? (
+              {author?.avatar_url ? (
                 <img
-                  src={author.profile_pic}
+                  src={author.avatar_url}
                   alt="Author"
                   className="w-6 h-6 rounded-full object-cover border border-indigo-300 shadow-sm"
                 />
