@@ -114,7 +114,7 @@ export default function Landing() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4 mb-4">
               <Link
-                to="/login"
+                to="/library"
                 className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2"
               >
                 <BookOpen className="w-5 h-5" />

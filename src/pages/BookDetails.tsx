@@ -23,42 +23,59 @@ export default function BookDetails() {
   const [showFull, setShowFull] = useState(false);
   const [progress, setProgress] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [comments, setComments] = useState<{ id: number; text: string; date: string }[]>([]);
+  const [comments, setComments] = useState<
+    { id: number; text: string; date: string }[]
+  >([]);
   const commentRef = useRef<HTMLInputElement>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  const added = book?.created_at ? new Date(book.created_at).toLocaleDateString() : null;
+  const added = book?.created_at
+    ? new Date(book.created_at).toLocaleDateString()
+    : null;
 
   const related = useMemo(() => {
     if (!book || !allBooks) return [];
-    return allBooks.filter((b) => b.genre === book.genre && b.id !== book.id).slice(0, 4);
+    return allBooks
+      .filter((b) => b.genre === book.genre && b.id !== book.id)
+      .slice(0, 4);
   }, [allBooks, book]);
 
   useEffect(() => {
-  if (!book) return;
-  const stored = localStorage.getItem(`bookmark-${book.id}`) === "true";
-  setIsBookmarked(stored);
-}, [book]);
+    if (!book) return;
+    const stored = localStorage.getItem(`bookmark-${book.id}`) === "true";
+    setIsBookmarked(stored);
+  }, [book]);
 
-// Save to localStorage
-useEffect(() => {
-  if (book) {
-    localStorage.setItem(`bookmark-${book.id}`, String(isBookmarked));
-  }
-}, [isBookmarked, book]);
+  // Save to localStorage
+  useEffect(() => {
+    if (book) {
+      localStorage.setItem(`bookmark-${book.id}`, String(isBookmarked));
+    }
+  }, [isBookmarked, book]);
 
   useEffect(() => {
     if (!book) return;
     setIsFav(localStorage.getItem(`fav-${book.id}`) === "true");
     setRating(Number(localStorage.getItem(`rating-${book.id}`) || 0));
     setProgress(Number(localStorage.getItem(`progress-${book.id}`) || 0));
-    setComments(JSON.parse(localStorage.getItem(`comments-${book.id}`) || "[]"));
+    setComments(
+      JSON.parse(localStorage.getItem(`comments-${book.id}`) || "[]")
+    );
   }, [book]);
 
-  useEffect(() => { if (book) localStorage.setItem(`fav-${book.id}`, String(isFav)); }, [isFav, book]);
-  useEffect(() => { if (book) localStorage.setItem(`rating-${book.id}`, String(rating)); }, [rating, book]);
-  useEffect(() => { if (book) localStorage.setItem(`progress-${book.id}`, String(progress)); }, [progress, book]);
-  useEffect(() => { if (book) localStorage.setItem(`comments-${book.id}`, JSON.stringify(comments)); }, [comments, book]);
+  useEffect(() => {
+    if (book) localStorage.setItem(`fav-${book.id}`, String(isFav));
+  }, [isFav, book]);
+  useEffect(() => {
+    if (book) localStorage.setItem(`rating-${book.id}`, String(rating));
+  }, [rating, book]);
+  useEffect(() => {
+    if (book) localStorage.setItem(`progress-${book.id}`, String(progress));
+  }, [progress, book]);
+  useEffect(() => {
+    if (book)
+      localStorage.setItem(`comments-${book.id}`, JSON.stringify(comments));
+  }, [comments, book]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(window.location.href);
@@ -69,7 +86,11 @@ useEffect(() => {
   const shareBook = async () => {
     try {
       if (navigator.share && book) {
-        await navigator.share({ title: book.title, text: book.summary, url: window.location.href });
+        await navigator.share({
+          title: book.title,
+          text: book.summary,
+          url: window.location.href,
+        });
       } else {
         alert("Sharing not supported in this browser.");
       }
@@ -120,37 +141,45 @@ useEffect(() => {
             <div className="transition-transform duration-300 hover:rotate-y-6 hover:-rotate-x-3 hover:shadow-xl hover:ring-4 hover:ring-bearBrown/10 rounded-2xl overflow-hidden">
               <BookCover book={book} className="w-full rounded-2xl" />
             </div>
-            
+
             {isFav && (
-              <Heart size={24} className="absolute -top-3 -right-3 text-red-600 drop-shadow" fill="currentColor" />
+              <Heart
+                size={24}
+                className="absolute -top-3 -right-3 text-red-600 drop-shadow"
+                fill="currentColor"
+              />
             )}
-            
           </div>
 
           <article className="flex-1 space-y-4">
             <header className="space-y-1">
               <div className="flex items-start gap-3">
-                <h1 className="text-4xl/tight font-bold text-bearBrown flex-1">{book.title}</h1>
+                <h1 className="text-4xl/tight font-bold text-bearBrown flex-1">
+                  {book.title}
+                </h1>
                 <button
                   aria-label={isFav ? "Unfavorite" : "Add to favorites"}
                   onClick={() => setIsFav((f) => !f)}
                   className="hover:text-red-600 transition"
                 >
-                  <Heart size={28} fill={isFav ? "currentColor" : "none"} strokeWidth={1.7} />
+                  <Heart
+                    size={28}
+                    fill={isFav ? "currentColor" : "none"}
+                    strokeWidth={1.7}
+                  />
                 </button>
                 <button
-  aria-label={isBookmarked ? "Unbookmark" : "Bookmark"}
-  onClick={() => setIsBookmarked((b) => !b)}
-  className="hover:text-blue-600 transition"
->
-  <Star
-    size={24}
-    className="ml-2"
-    fill={isBookmarked ? "currentColor" : "none"}
-    strokeWidth={1.7}
-  />
-</button>
-
+                  aria-label={isBookmarked ? "Unbookmark" : "Bookmark"}
+                  onClick={() => setIsBookmarked((b) => !b)}
+                  className="hover:text-blue-600 transition"
+                >
+                  <Star
+                    size={24}
+                    className="ml-2"
+                    fill={isBookmarked ? "currentColor" : "none"}
+                    strokeWidth={1.7}
+                  />
+                </button>
               </div>
 
               <div className="text-sm text-gray-500 flex flex-wrap gap-3">
@@ -160,7 +189,10 @@ useEffect(() => {
                   </span>
                 )}
                 {book.author && (
-                  <Link to={`/author/${book.author}`} className="underline hover:text-bearBrown">
+                  <Link
+                    to={`/author/${book.author}`}
+                    className="underline hover:text-bearBrown"
+                  >
                     Author Profile
                   </Link>
                 )}
@@ -168,11 +200,18 @@ useEffect(() => {
               </div>
             </header>
 
-            <p className={`whitespace-pre-line leading-relaxed text-[17px] text-gray-700 ${showFull ? "" : "line-clamp-3"}`}>
+            <p
+              className={`whitespace-pre-line leading-relaxed text-[17px] text-gray-700 ${
+                showFull ? "" : "line-clamp-3"
+              }`}
+            >
               {book.summary}
             </p>
             {book.summary?.length > 140 && (
-              <button onClick={() => setShowFull((s) => !s)} className="text-sm text-bearBrown hover:underline">
+              <button
+                onClick={() => setShowFull((s) => !s)}
+                className="text-sm text-bearBrown hover:underline"
+              >
                 {showFull ? "Show less ▲" : "Show more ▼"}
               </button>
             )}
@@ -185,11 +224,17 @@ useEffect(() => {
                   onClick={() => setRating(n)}
                   className="text-yellow-500 hover:scale-110 transition-transform"
                 >
-                  <Star size={24} fill={rating >= n ? "currentColor" : "none"} strokeWidth={1.5} />
+                  <Star
+                    size={24}
+                    fill={rating >= n ? "currentColor" : "none"}
+                    strokeWidth={1.5}
+                  />
                 </button>
               ))}
               {rating > 0 && (
-                <span className="text-sm text-gray-600 pl-2">You rated {rating}/5</span>
+                <span className="text-sm text-gray-600 pl-2">
+                  You rated {rating}/5
+                </span>
               )}
             </div>
 
@@ -203,7 +248,6 @@ useEffect(() => {
                 onChange={(e) => setProgress(Number(e.target.value))}
                 className="w-full accent-"
               />
-             
             </div>
 
             <div className="flex flex-wrap gap-3 pt-4">
@@ -247,7 +291,10 @@ useEffect(() => {
               </div>
               <ul className="space-y-2">
                 {comments.map((c) => (
-                  <li key={c.id} className="flex justify-between items-start bg-gray-100 p-2 rounded">
+                  <li
+                    key={c.id}
+                    className="flex justify-between items-start bg-gray-100 p-2 rounded"
+                  >
                     <div>
                       <p className="text-sm">{c.text}</p>
                       <span className="text-xs text-gray-500">{c.date}</span>
@@ -279,8 +326,14 @@ useEffect(() => {
                   key={rb.id}
                   className="flex flex-col items-center text-center bg-gray-50 p-3 rounded hover:shadow transition"
                 >
-                  <img src={rb.cover_url} alt={rb.title} className="w-24 h-32 object-cover rounded mb-2" />
-                  <span className="text-xs font-medium text-bearBrown line-clamp-2">{rb.title}</span>
+                  <img
+                    src={rb.cover_url}
+                    alt={rb.title}
+                    className="w-24 h-32 object-cover rounded mb-2"
+                  />
+                  <span className="text-xs font-medium text-bearBrown line-clamp-2">
+                    {rb.title}
+                  </span>
                 </Link>
               ))}
             </div>

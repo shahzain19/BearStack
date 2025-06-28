@@ -28,8 +28,12 @@ export default function BlogList() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-20">
-      <h1 className="text-4xl font-extrabold mb-6 text-center">🧸 BearStacks Blog</h1>
-      <p className="text-center text-gray-600 mb-12">Tips, guides, and cozy updates from the team.</p>
+      <h1 className="text-4xl font-extrabold mb-6 text-center">
+        🧸 BearStacks Blog
+      </h1>
+      <p className="text-center text-gray-600 mb-12">
+        Tips, guides, and cozy updates from the team.
+      </p>
 
       <div className="space-y-8">
         {posts.map((post) => (
