@@ -22,7 +22,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-// import { checkAndAwardBadges } from '../lib/badges'; // optional
+// import { checkAndAwardBadges } from '../lib/badges'; // optional badge logic
 
 const WORDS_PER_PAGE = 250;
 
@@ -43,6 +43,7 @@ export default function BookReader() {
   const [currentPage, setCurrentPage] = useState(0);
   const [hasLoggedRead, setHasLoggedRead] = useState(false);
 
+  // Split book content into pages using an approximate word count per page
   const pages = useMemo(() => {
     if (!book?.content) return [];
     const blocks = book.content
@@ -61,11 +62,9 @@ export default function BookReader() {
         current = [];
         wordCount = 0;
       }
-
       current.push(block);
       wordCount += wordsInBlock;
     }
-
     if (current.length > 0) grouped.push(current.join('\n\n'));
     return grouped;
   }, [book?.content]);
@@ -103,37 +102,62 @@ export default function BookReader() {
     return () => window.removeEventListener('keydown', onKey);
   }, [totalPages]);
 
-  // Auto log book read
+  // Auto log when the book is finished.
   useEffect(() => {
     const logRead = async () => {
       if (!book?.id || hasLoggedRead || !supabase) return;
 
+      // Get current user.
       const {
         data: { user },
       } = await supabase.auth.getUser();
       const userId = user?.id;
       if (!userId) return;
 
+      // Determine if the user has finished the book.
       const isFinished =
         (layoutMode === 'double' && currentPage + 2 >= totalPages) ||
         (layoutMode === 'single' && currentPage + 1 >= totalPages);
 
-      if (isFinished) {
-        const estimatedPages =
-          book?.pages ?? Math.round(book?.content.split(/\s+/).length / WORDS_PER_PAGE);
+      if (!isFinished) return;
 
-        const { error } = await supabase.from('books_read').insert({
-          user_id: userId,
-          book_id: book.id,
-          pages_read: estimatedPages,
-          genre: book?.genre || 'Unknown',
-        });
+      // Check if the book is already logged as read for this user.
+      const { data: existing, error: fetchError } = await supabase
+        .from('books_read')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('book_id', book.id)
+        .maybeSingle();
 
-        if (!error) {
-          console.log('📚 Book marked as read');
-          setHasLoggedRead(true);
-          // await checkAndAwardBadges(userId); // optional
-        }
+      if (fetchError) {
+        console.error('❌ Failed to check books_read:', fetchError.message);
+        return;
+      }
+      if (existing) {
+        console.log('✅ Already logged as read.');
+        setHasLoggedRead(true);
+        return;
+      }
+
+      // Estimate pages either from the book field or calculate from content.
+      const estimatedPages =
+        book?.pages ?? Math.round(book?.content.split(/\s+/).length / WORDS_PER_PAGE);
+
+      // Insert a new record into books_read.
+      const { error: insertError } = await supabase.from('books_read').insert({
+        user_id: userId,
+        book_id: book.id,
+        pages_read: estimatedPages,
+        genre: book?.genre || 'Unknown',
+      });
+
+      if (!insertError) {
+        console.log('📚 Book marked as read');
+        setHasLoggedRead(true);
+        // Optionally trigger badges here:
+        // await checkAndAwardBadges(userId);
+      } else {
+        console.error('❌ Error inserting read record:', insertError.message);
       }
     };
 
@@ -145,6 +169,7 @@ export default function BookReader() {
 
   return (
     <Fragment>
+      {/* Progress Bar */}
       <div
         style={{ width: `${progress}%` }}
         className="fixed top-0 left-0 h-1 bg-bearBrown z-50 transition-all duration-300"
