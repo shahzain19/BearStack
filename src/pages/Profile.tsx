@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Loader, Sparkles, Calendar, Fingerprint, Link2 } from "lucide-react";
+import MagicBadge from "../components/MagicBadge";
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null);
@@ -102,24 +103,10 @@ export default function Profile() {
               Martin
             </p>
 
-            {/* 🎖️ Badges */}
             {badges.length > 0 && (
-              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 {badges.map((badge, idx) => (
-                  <div
-                    key={idx}
-                    className="group relative p-4 rounded-xl bg-gradient-to-br from-yellow-100 via-yellow-50 to-white border-2 border-yellow-300 shadow-lg hover:shadow-xl transition-all"
-                  >
-                    <div className="text-4xl mb-2 text-yellow-500 drop-shadow-sm group-hover:scale-105 transition-transform">
-                      🏅
-                    </div>
-                    <div className="text-sm font-semibold text-yellow-800 tracking-wide text-center">
-                      {badge}
-                    </div>
-
-                    {/* Glow ring */}
-                    <div className="absolute -inset-[2px] rounded-xl border border-yellow-300 pointer-events-none group-hover:shadow-[0_0_10px_2px_rgba(253,224,71,0.6)] transition" />
-                  </div>
+                  <MagicBadge key={idx} label={badge} rarity="common" />
                 ))}
               </div>
             )}
