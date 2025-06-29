@@ -30,10 +30,10 @@ export default function ProfilePage() {
     const fetchUsername = async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("username")
+        .select("email")
         .eq("id", id)
         .single();
-      if (data?.username) setUsername(data.username);
+      if (data?.email) setUsername(data.email.split("@")[0]); // Use email prefix as username
     };
 
     const fetchBadges = async () => {
