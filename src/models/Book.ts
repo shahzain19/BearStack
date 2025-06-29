@@ -13,6 +13,7 @@ export interface Book {
   genre?: string;
   status?: 'published' | 'draft';
   is_accepted?: 'yes' | 'no' | 'pending';
+  pages?: number; // ← NEW
 
   /** 💛 whether the current user starred this book */
   is_favorite?: boolean;        // ← NEW

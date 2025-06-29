@@ -21,6 +21,8 @@ import {
   LayoutGrid,
   BookOpen,
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+// import { checkAndAwardBadges } from '../lib/badges'; // optional
 
 const WORDS_PER_PAGE = 250;
 
@@ -39,6 +41,7 @@ export default function BookReader() {
 
   const [progress, setProgress] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [hasLoggedRead, setHasLoggedRead] = useState(false);
 
   const pages = useMemo(() => {
     if (!book?.content) return [];
@@ -100,18 +103,53 @@ export default function BookReader() {
     return () => window.removeEventListener('keydown', onKey);
   }, [totalPages]);
 
+  // Auto log book read
+  useEffect(() => {
+    const logRead = async () => {
+      if (!book?.id || hasLoggedRead || !supabase) return;
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const userId = user?.id;
+      if (!userId) return;
+
+      const isFinished =
+        (layoutMode === 'double' && currentPage + 2 >= totalPages) ||
+        (layoutMode === 'single' && currentPage + 1 >= totalPages);
+
+      if (isFinished) {
+        const estimatedPages =
+          book?.pages ?? Math.round(book?.content.split(/\s+/).length / WORDS_PER_PAGE);
+
+        const { error } = await supabase.from('books_read').insert({
+          user_id: userId,
+          book_id: book.id,
+          pages_read: estimatedPages,
+          genre: book?.genre || 'Unknown',
+        });
+
+        if (!error) {
+          console.log('📚 Book marked as read');
+          setHasLoggedRead(true);
+          // await checkAndAwardBadges(userId); // optional
+        }
+      }
+    };
+
+    logRead();
+  }, [currentPage, totalPages, layoutMode, book, hasLoggedRead]);
+
   if (loading) return <p className="p-6 text-center">Loading…</p>;
   if (!book) return <p className="p-6 text-center">Book not found.</p>;
 
   return (
     <Fragment>
-      {/* Progress Bar */}
       <div
         style={{ width: `${progress}%` }}
         className="fixed top-0 left-0 h-1 bg-bearBrown z-50 transition-all duration-300"
       />
 
-      {/* Main Wrapper */}
       <div className="h-screen w-screen bg-[#fdfbf7] text-[#3E2723] font-serif flex flex-col">
         {/* Header */}
         <header className="sticky top-0 z-40 backdrop-blur bg-white/80 border-b border-[#f1e8cd] shadow-sm px-4 sm:px-6 py-3 flex justify-between items-center">
@@ -145,7 +183,6 @@ export default function BookReader() {
                 </button>
               );
             })}
-
             <button
               onClick={() => setFontSize((f) => Math.max(f - 2, 14))}
               className="p-2 rounded hover:bg-bearBrown/10"
