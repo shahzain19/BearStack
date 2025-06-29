@@ -24,16 +24,62 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     try {
-      await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin, // Ensures smooth return in dev/prod
+          redirectTo: window.location.origin,
         },
       });
+
+      if (error) throw error;
     } catch (err: any) {
       console.error("Google login error:", err.message);
     }
   };
+
+  useEffect(() => {
+    const assignRandomBadge = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Check if user profile exists and has badges
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("badges")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Profile fetch error:", error.message);
+        return;
+      }
+
+      // If no badge, assign one randomly
+      if (!profile?.badges || profile.badges.length === 0) {
+        const badgePool = [
+          "🧙 Wizard",
+          "🐻 Bear Buddy",
+          "📚 Bookworm",
+          "🎨 Creative Cub",
+          "🌟 Cozy Reader",
+        ];
+        const randomBadge = badgePool[Math.floor(Math.random() * badgePool.length)];
+
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({ badges: [randomBadge] })
+          .eq("id", user.id);
+
+        if (updateError) {
+          console.error("Failed to assign badge:", updateError.message);
+        } else {
+          console.log(`🎖️ Assigned random badge: ${randomBadge}`);
+        }
+      }
+    };
+
+    assignRandomBadge();
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-honey">

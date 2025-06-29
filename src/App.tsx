@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Login from "./pages/Login";
@@ -20,6 +25,7 @@ import BlogReader from "./pages/BlogReader";
 import NooksPage from "./pages/NooksPage";
 import CreateNookPage from "./pages/CreateNookPage";
 import NookDetailPage from "./pages/NookDetailPage";
+import Profile from "./pages/Profile";
 
 inject();
 
@@ -38,7 +44,7 @@ export default function App() {
   return (
     <div className="min-h-screen">
       <Router>
-         <AnalyticsTracker />
+        <AnalyticsTracker />
         <Routes>
           {/* 🟢 Public Routes */}
           <Route path="/" element={<Home />} />
@@ -49,20 +55,69 @@ export default function App() {
           <Route path="/blog/:slug" element={<BlogReader />} />
 
           {/* 🔒 Protected Routes */}
-          <Route path="/library" element={<Library /> } />
-
+          <Route path="/library" element={<Library />} />
+          <Route path="/profile/:id" element={<Profile />} />
           <Route path="/nooks" element={<NooksPage />} />
           <Route path="/nook/create" element={<CreateNookPage />} />
           <Route path="/nook/:id" element={<NookDetailPage />} />
-          <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />  
-          <Route path="/book/:id" element={<ProtectedRoute><BookDetails /></ProtectedRoute>} />
-          <Route path="/read/:id" element={<ProtectedRoute><ReaderPage /></ProtectedRoute>} />
+          <Route
+            path="/bookmarks"
+            element={
+              <ProtectedRoute>
+                <BookmarksPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/book/:id"
+            element={
+              <ProtectedRoute>
+                <BookDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/read/:id"
+            element={
+              <ProtectedRoute>
+                <ReaderPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/author/:id" element={<AuthorPublicPage />} />
-          <Route path="/admin-approval" element={<ProtectedRoute><AdminApprovalPage /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><AuthorDashboard /></ProtectedRoute>} />
-          <Route path="/dashboard/profile" element={<ProtectedRoute><AuthorProfileForm /></ProtectedRoute>} />
+          <Route
+            path="/admin-approval"
+            element={
+              <ProtectedRoute>
+                <AdminApprovalPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <AuthorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/profile"
+            element={
+              <ProtectedRoute>
+                <AuthorProfileForm />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/dashboard/new" element={<BookEditor mode="new" />} />
-          <Route path="/dashboard/edit/:id" element={<ProtectedRoute><BookEditor mode="edit" /></ProtectedRoute>} />
+          <Route
+            path="/dashboard/edit/:id"
+            element={
+              <ProtectedRoute>
+                <BookEditor mode="edit" />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
     </div>
