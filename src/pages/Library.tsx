@@ -12,10 +12,41 @@ import {
   Plus,
   Bookmark,
   User,
+  LampDesk,
 } from "lucide-react";
 import type { Book } from "../models/Book";
 import { supabase } from "../lib/supabase";
 import { motion } from "framer-motion";
+import { setTheme, getStoredTheme } from "../contexts/ThemeContext";
+
+export function ThemeToggle() {
+  const [theme, setThemeState] = useState<"light" | "dark" | "cozy">("light");
+
+  useEffect(() => {
+    const stored = getStoredTheme();
+    setTheme(stored);
+    setThemeState(stored);
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value as "light" | "dark" | "cozy";
+    setTheme(selected);
+    setThemeState(selected);
+  };
+
+  return (
+    <select
+      value={theme}
+      onChange={handleChange}
+      className="border px-3 py-1 rounded-full text-sm bg-[var(--card)] text-[var(--text)]"
+    >
+      <option value="light">☀️ Light</option>
+      <option value="dark">🌙 Dark</option>
+      <option value="cozy">🍂 Cozy</option>
+    </select>
+  );
+}
+
 
 interface BookWithExtras extends Book {
   genre?: string;
@@ -115,9 +146,14 @@ export default function Library() {
     });
 
     if (query) {
-      result = result.filter((book) =>
-        book.title.toLowerCase().includes(query.toLowerCase())
-      );
+      const q = query.toLowerCase();
+      result = result.filter((book) => {
+        return (
+          book.title?.toLowerCase().includes(q) ||
+          book.summary?.toLowerCase().includes(q) ||
+          book.author_pen_name?.toLowerCase().includes(q)
+        );
+      });
     }
 
     if (selectedGenre !== "All") {
@@ -159,8 +195,14 @@ export default function Library() {
             </Link>
           )}
           <Link
+            to="/nooks"
+            className="flex text-gray-500 items-center gap-2 text-sm hover:bg-gray-100 hover:text-yellow-400 hover:border-black"
+          >
+            <LampDesk size={35} />
+          </Link>
+          <Link
             to="/dashboard"
-            className="flex items-center gap-2 text-sm hover:bg-gray-100 hover:text-black hover:border-black"
+            className="flex text-gray-500 items-center gap-2 text-sm hover:bg-gray-100 hover:text-black hover:border-black"
           >
             <LayoutDashboard size={35} />
           </Link>

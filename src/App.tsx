@@ -20,6 +20,7 @@ import BlogReader from "./pages/BlogReader";
 import NooksPage from "./pages/NooksPage";
 import CreateNookPage from "./pages/CreateNookPage";
 import NookDetailPage from "./pages/NookDetailPage";
+import ProfilePage from "./pages/ProfilePage";
 
 inject();
 
@@ -56,6 +57,8 @@ export default function App() {
           <Route path="/nook/:id" element={<NookDetailPage />} />
           <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />  
           <Route path="/book/:id" element={<ProtectedRoute><BookDetails /></ProtectedRoute>} />
+          <Route path="/profile/:id" element={<ProfilePage />} />
+
           <Route path="/read/:id" element={<ProtectedRoute><ReaderPage /></ProtectedRoute>} />
           <Route path="/author/:id" element={<AuthorPublicPage />} />
           <Route path="/admin-approval" element={<ProtectedRoute><AdminApprovalPage /></ProtectedRoute>} />
