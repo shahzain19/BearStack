@@ -56,7 +56,7 @@ export default function App() {
 
           {/* 🔒 Protected Routes */}
           <Route path="/library" element={<Library />} />
-          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/nooks" element={<NooksPage />} />
           <Route path="/nook/create" element={<CreateNookPage />} />
           <Route path="/nook/:id" element={<NookDetailPage />} />

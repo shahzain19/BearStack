@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import {
-  Loader,
-  Sparkles,
-  Calendar,
-  Fingerprint,
-  Link2,
-} from "lucide-react";
+import { Loader, Sparkles, Calendar, Fingerprint, Link2 } from "lucide-react";
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null);
@@ -110,14 +104,22 @@ export default function Profile() {
 
             {/* 🎖️ Badges */}
             {badges.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {badges.map((badge, idx) => (
-                  <span
+                  <div
                     key={idx}
-                    className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm shadow-sm"
+                    className="group relative p-4 rounded-xl bg-gradient-to-br from-yellow-100 via-yellow-50 to-white border-2 border-yellow-300 shadow-lg hover:shadow-xl transition-all"
                   >
-                    🏅 {badge}
-                  </span>
+                    <div className="text-4xl mb-2 text-yellow-500 drop-shadow-sm group-hover:scale-105 transition-transform">
+                      🏅
+                    </div>
+                    <div className="text-sm font-semibold text-yellow-800 tracking-wide text-center">
+                      {badge}
+                    </div>
+
+                    {/* Glow ring */}
+                    <div className="absolute -inset-[2px] rounded-xl border border-yellow-300 pointer-events-none group-hover:shadow-[0_0_10px_2px_rgba(253,224,71,0.6)] transition" />
+                  </div>
                 ))}
               </div>
             )}
@@ -201,11 +203,11 @@ export default function Profile() {
         <div className="rounded-2xl bg-[#fffdef] border border-yellow-200 p-6 flex items-start gap-4 shadow-sm hover:shadow-md transition">
           <Sparkles className="w-5 h-5 text-yellow-600 mt-1" />
           <div className="text-sm leading-relaxed text-gray-800">
-            Did you know? The average reader can finish about <b>50 books a year</b> by just reading 30 minutes a day!
+            Did you know? The average reader can finish about{" "}
+            <b>50 books a year</b> by just reading 30 minutes a day!
           </div>
         </div>
       </div>
     </div>
   );
 }
-  
