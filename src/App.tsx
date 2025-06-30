@@ -26,6 +26,7 @@ import NooksPage from "./pages/NooksPage";
 import CreateNookPage from "./pages/CreateNookPage";
 import NookDetailPage from "./pages/NookDetailPage";
 import Profile from "./pages/Profile";
+import ShelfPage from "./pages/ShelfPage";
 
 inject();
 
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/new" element={<NewBlog />} />
           <Route path="/blog/:slug" element={<BlogReader />} />
+          <Route path="/shelf/:id" element={<ShelfPage />} />
 
           {/* 🔒 Protected Routes */}
           <Route path="/library" element={<Library />} />

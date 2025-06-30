@@ -11,6 +11,7 @@ import {
   Share,
   Trash2,
 } from "lucide-react";
+import AddToShelf from "../components/AddToShelf";
 
 export default function BookDetails() {
   const { id } = useParams();
@@ -272,6 +273,7 @@ export default function BookDetails() {
                 <Share size={16} /> Share
               </button>
             </div>
+            <AddToShelf bookId={book.id} />
 
             <section className="mt-6 space-y-3">
               <h2 className="text-lg font-semibold">Comments</h2>

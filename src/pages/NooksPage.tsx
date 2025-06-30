@@ -23,7 +23,7 @@ export default function NooksPage() {
       <div className="max-w-6xl mx-auto">
         {/* Go Back Link */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           className="mb-4 text-sm text-gray-500 hover:text-[#5999ff] transition flex items-center gap-1"
         >
           <span className="text-lg">←</span> Go Back
@@ -61,19 +61,6 @@ export default function NooksPage() {
                 <p className="text-sm text-gray-500 mt-2 line-clamp-3">
                   {nook.description}
                 </p>
-
-                {nook.tags?.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {nook.tags.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 text-xs bg-[#f2f4f7] text-gray-700 rounded-full border border-gray-200"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </Link>
             ))}
           </div>

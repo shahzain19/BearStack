@@ -4,23 +4,34 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Loader, Sparkles, Calendar, Fingerprint, Link2 } from "lucide-react";
 import MagicBadge from "../components/MagicBadge";
+import { Link } from "react-router-dom";
+import CreateShelfBox from "../components/CreateShelfBox";
+
+// ...same imports
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null);
   const [badges, setBadges] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [shelves, setShelves] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchShelves = async () => {
+      const { data } = await supabase
+        .from("shelves")
+        .select("id, name")
+        .order("created_at");
+      setShelves(data || []);
+    };
+    fetchShelves();
+  }, []);
 
   useEffect(() => {
     const getUserAndBadges = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
+      if (!user) return setLoading(false);
       setUser(user);
 
       const { data: profile, error } = await supabase
@@ -29,12 +40,8 @@ export default function Profile() {
         .eq("id", user.id)
         .single();
 
-      if (error) {
-        console.error("Error fetching badges:", error.message);
-      } else {
-        setBadges(profile?.badges || []);
-      }
-
+      if (error) console.error("Error fetching badges:", error.message);
+      else setBadges(profile?.badges || []);
       setLoading(false);
     };
 
@@ -78,11 +85,11 @@ export default function Profile() {
   const email = user.user_metadata?.email || "Anonymous";
 
   return (
-    <div className="min-h-screen px-6 py-20 font-[Inter] text-gray-900">
-      <div className="max-w-4xl mx-auto flex flex-col gap-16">
-        {/* Profile Header */}
-        <div className="flex items-center gap-6">
-          <div className="relative w-28 h-28">
+    <div className="min-h-screen px-6 py-20 font-[Inter] text-gray-900 bg-gradient-to-b from-white to-[#f9fafb]">
+      <div className="max-w-5xl mx-auto flex flex-col gap-14">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
+          <div className="relative w-28 h-28 shrink-0">
             <div
               className={`absolute inset-0 rounded-full p-1 overflow-hidden bg-gradient-to-r ${getUserGradient(
                 user.id
@@ -91,33 +98,79 @@ export default function Profile() {
               <img
                 src={avatar}
                 alt={name}
-                className="w-full h-full rounded-full object-cover border-4 border-white shadow"
+                className="w-full h-full rounded-full object-cover border-4 border-white shadow-lg"
               />
             </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold leading-tight">{name}</h1>
+
+          <div className="text-center sm:text-left w-full">
+            <h1 className="text-3xl font-bold">{name}</h1>
             <p className="text-gray-500 text-base mt-1">{email}</p>
             <p className="text-sm text-gray-400 mt-2 italic">
               “A reader lives a thousand lives before he dies.” – George R.R.
               Martin
             </p>
 
+            {/* Badges */}
             {badges.length > 0 && (
-              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {badges.map((badge, idx) => (
-                  <MagicBadge key={idx} label={badge} rarity="common" />
-                ))}
+              <div className="mt-8">
+                <h3 className="text-sm text-gray-700 font-medium mb-3">
+                  Your Badges
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {badges.map((badge, idx) => (
+                    <MagicBadge key={idx} label={badge} rarity="common" />
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {/* Library Card */}
-          <div className="rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition">
-            {/* Gradient Banner */}
+        {/* Shelves */}
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-4">🧺 Your Shelves</h2>
+
+          {/* Shelf Creation */}
+          {shelves.length < 5 ? (
+            <CreateShelfBox
+              onCreated={() => {
+                supabase
+                  .from("shelves")
+                  .select("id, name")
+                  .order("created_at")
+                  .then(({ data }) => setShelves(data || []));
+              }}
+            />
+          ) : (
+            <div className="mt-2 text-sm text-red-500 italic">
+              ✋ Whoa! You can only have up to 5 shelves for now.
+            </div>
+          )}
+
+          {/* Shelf List */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-6">
+            {shelves.map((shelf, i) => (
+              <Link
+                key={shelf.id}
+                to={`/shelf/${shelf.id}`}
+                className="relative group bg-gradient-to-br from-[#fffaf1] to-[#f9f4ea] border border-[#e8dccb] p-5 rounded-xl shadow-sm hover:shadow-lg transition-all"
+              >
+                <div className="text-[#7a4f35] font-bold text-lg mb-1 flex items-center gap-2">
+                  📚 {shelf.name}
+                </div>
+                <p className="text-sm text-[#b39a85] italic">Shelf #{i + 1}</p>
+                <span className="absolute top-2 right-2 text-[10px] bg-[#f1e4d1] text-[#8c6346] px-2 py-[2px] rounded-full shadow-sm">
+                  🧺 Shelf
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats Card */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
             <div
               className={`bg-gradient-to-r ${getUserGradient(
                 user.id
@@ -137,62 +190,42 @@ export default function Profile() {
                 </div>
               </div>
             </div>
-
-            {/* Card Body */}
             <div className="pt-16 pb-6 px-6 sm:px-8 bg-white">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-gray-700">
-                <div className="flex flex-col gap-1">
+                <div>
                   <span className="text-gray-400 flex items-center gap-1">
                     <Calendar className="w-4 h-4" /> Spawned
                   </span>
-                  <span className="font-medium">
+                  <p className="font-medium">
                     {new Date(user.created_at).toLocaleDateString()}
-                  </span>
+                  </p>
                 </div>
-                <div className="flex flex-col gap-1">
+                <div>
                   <span className="text-gray-400 flex items-center gap-1">
                     <Fingerprint className="w-4 h-4" /> Member ID
                   </span>
-                  <span className="text-xs px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">
+                  <p className="text-xs px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">
                     #{user.id.slice(0, 8).toUpperCase()}
-                  </span>
+                  </p>
                 </div>
-                <div className="flex flex-col gap-1">
+                <div>
                   <span className="text-gray-400 flex items-center gap-1">
                     <Link2 className="w-4 h-4" /> Provider
                   </span>
-                  <span className="text-gray-800 font-medium">Google</span>
+                  <p className="font-medium">Google</p>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Book Stats */}
-          <div className="rounded-2xl border border-gray-200 shadow-sm p-6 bg-white hover:shadow-md transition">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              📊 Reading Stats
-            </h2>
-            <ul className="text-sm text-gray-700 space-y-2">
-              <li>
-                <strong>Books Read:</strong> 12 (soon dynamic)
-              </li>
-              <li>
-                <strong>Currently Reading:</strong> The Wind-Up Bird Chronicle
-              </li>
-              <li>
-                <strong>Favorites:</strong> 3
-              </li>
-            </ul>
-          </div>
         </div>
 
-        {/* Trivia */}
+        {/* Trivia Box */}
         <div className="rounded-2xl bg-[#fffdef] border border-yellow-200 p-6 flex items-start gap-4 shadow-sm hover:shadow-md transition">
           <Sparkles className="w-5 h-5 text-yellow-600 mt-1" />
-          <div className="text-sm leading-relaxed text-gray-800">
+          <p className="text-sm leading-relaxed text-gray-800">
             Did you know? The average reader can finish about{" "}
             <b>50 books a year</b> by just reading 30 minutes a day!
-          </div>
+          </p>
         </div>
       </div>
     </div>

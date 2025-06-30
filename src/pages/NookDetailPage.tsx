@@ -40,7 +40,7 @@ export default function NookDetailPage() {
     const fetchPosts = async () => {
       const { data } = await supabase
         .from("book_nook_posts")
-        .select("*, authors(id, pen_name, avatar_url)")
+        .select("*")
         .eq("nook_id", id)
         .order("created_at", { ascending: false });
       setPosts(data ?? []);
@@ -71,12 +71,13 @@ export default function NookDetailPage() {
 
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (authError || !user) {
       const { count } = await supabase
         .from("book_nook_posts")
-        .select("*")
+        .select("*", { count: "exact", head: true })
         .eq("nook_id", id)
         .eq("is_guest", true);
 
@@ -92,31 +93,28 @@ export default function NookDetailPage() {
         is_guest: true,
       });
 
-      if (error) {
-        alert("Failed to post.");
-      }
+      if (error) alert("Failed to post.");
     } else {
-      const { data: authorData } = await supabase
-        .from("authors")
-        .select("id")
-        .eq("id", user.id)
-        .single();
-
-      if (!authorData) {
-        alert("Author profile not found.");
-        setPosting(false);
-        return;
-      }
+      const userMeta = {
+        name:
+          user.user_metadata.full_name ||
+          user.user_metadata.name ||
+          "Anonymous",
+        avatar_url: user.user_metadata.avatar_url || "",
+      };
 
       const { error } = await supabase.from("book_nook_posts").insert({
         nook_id: id,
         content,
-        author_id: authorData.id,
         is_guest: false,
+        user_metadata: userMeta, // Supabase handles this if column is json/jsonb
       });
 
       if (error) {
+        console.error("Insert error:", error);
         alert("Failed to post.");
+        setPosting(false);
+        return;
       }
     }
 
@@ -124,7 +122,7 @@ export default function NookDetailPage() {
 
     const { data: updatedPosts } = await supabase
       .from("book_nook_posts")
-      .select("*, authors(id, pen_name, avatar_url)")
+      .select("*")
       .eq("nook_id", id)
       .order("created_at", { ascending: false });
 
@@ -139,7 +137,6 @@ export default function NookDetailPage() {
   return (
     <div className="min-h-screen bg-white text-zinc-800 font-[Inter] px-6 sm:px-10 lg:px-[12vw] xl:px-[16vw] py-24">
       <div className="w-full mx-auto space-y-32 max-w-screen-xl">
-        {/* BACK LINK */}
         <div className="mb-12">
           <a
             href="/nooks"
@@ -149,7 +146,6 @@ export default function NookDetailPage() {
           </a>
         </div>
 
-        {/* HEADER */}
         <header className="space-y-10 text-center">
           <h1 className="text-[3.2rem] sm:text-[4rem] font-extrabold tracking-tight leading-tight text-zinc-900">
             {nook.title}
@@ -180,7 +176,6 @@ export default function NookDetailPage() {
           </div>
         </header>
 
-        {/* EDITOR */}
         <section className="space-y-6 max-w-3xl mx-auto">
           <EditorContent
             editor={editor}
@@ -206,7 +201,6 @@ export default function NookDetailPage() {
           </div>
         </section>
 
-        {/* POSTS */}
         <section ref={parentRef} className="space-y-16 max-w-4xl mx-auto">
           <h2 className="text-[2rem] font-semibold text-zinc-800 tracking-tight text-center">
             Community Posts
@@ -216,52 +210,54 @@ export default function NookDetailPage() {
               No posts yet. Be the first to contribute.
             </p>
           ) : (
-            posts.map((post) => (
-              <article
-                key={post.id}
-                className="group bg-white border border-zinc-200 hover:border-zinc-200 rounded-[2rem] shadow-[0_2px_14px_rgba(0,0,0,0.04)] hover:shadow-[0_3px_20px_rgba(0,0,0,0.06)] hover:-translate-y-[3px] transition-all p-8 sm:p-10 space-y-6"
-              >
-                <div className="flex items-center gap-4">
-                  <img
-                    src={
-                      post.authors?.avatar_url
-                        ? post.authors.avatar_url
-                        : `https://api.dicebear.com/7.x/initials/svg?seed=${
-                            post.authors?.pen_name ?? "Guest"
-                          }`
-                    }
-                    alt="avatar"
-                    className="w-11 h-11 rounded-full object-cover border border-zinc-300 bg-zinc-100"
-                  />
-                  <div className="text-sm leading-tight">
-                    <p className="font-medium text-zinc-800">
-                      {post.authors?.pen_name ?? "Guest"}
-                    </p>
-                    <p className="text-xs text-zinc-400">
-                      {new Date(post.created_at).toLocaleString()}
-                    </p>
+            posts.map((post) => {
+              const meta = post.user_metadata || {};
+              const name = post.is_guest
+                ? "Guest"
+                : meta.name || meta.full_name || "Anonymous";
+              const avatar =
+                meta.avatar_url ||
+                `https://api.dicebear.com/7.x/initials/svg?seed=${name}`;
+
+              return (
+                <article
+                  key={post.id}
+                  className="group bg-white border border-zinc-200 hover:border-zinc-200 rounded-[2rem] shadow-[0_2px_14px_rgba(0,0,0,0.04)] hover:shadow-[0_3px_20px_rgba(0,0,0,0.06)] hover:-translate-y-[3px] transition-all p-8 sm:p-10 space-y-6"
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={avatar}
+                      alt="avatar"
+                      className="w-11 h-11 rounded-full object-cover border border-zinc-300 bg-zinc-100"
+                    />
+                    <div className="text-sm leading-tight">
+                      <p className="font-medium text-zinc-800">{name}</p>
+                      <p className="text-xs text-zinc-400">
+                        {new Date(post.created_at).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <div
-                  className="prose prose-lg sm:prose-xl max-w-none text-zinc-800 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                  <div
+                    className="prose prose-lg sm:prose-xl max-w-none text-zinc-800 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                  />
 
-                <div className="pt-2 flex gap-6 text-sm text-zinc-500 opacity-100 group-hover:opacity-100 transition-opacity">
-                  <button className="hover:text-[#ffc017] flex items-center gap-1 group">
-                    <Heart
-                      size={14}
-                      className="group-hover:scale-110 transition-transform"
-                    />{" "}
-                    Like
-                  </button>
-                  <button className="hover:text-[#ffc017] flex items-center gap-1 group">
-                    <MessageCircle size={14} /> Reply
-                  </button>
-                </div>
-              </article>
-            ))
+                  <div className="pt-2 flex gap-6 text-sm text-zinc-500 opacity-100 group-hover:opacity-100 transition-opacity">
+                    <button className="hover:text-[#ffc017] flex items-center gap-1 group">
+                      <Heart
+                        size={14}
+                        className="group-hover:scale-110 transition-transform"
+                      />{" "}
+                      Like
+                    </button>
+                    <button className="hover:text-[#ffc017] flex items-center gap-1 group">
+                      <MessageCircle size={14} /> Reply
+                    </button>
+                  </div>
+                </article>
+              );
+            })
           )}
         </section>
       </div>
