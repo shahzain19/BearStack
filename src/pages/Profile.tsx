@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Loader, Sparkles, Calendar, Fingerprint, Link2 } from "lucide-react";
+import { Loader, Sparkles, Calendar, Fingerprint, Link2, Boxes, Package, Archive } from "lucide-react";
 import MagicBadge from "../components/MagicBadge";
 import { Link } from "react-router-dom";
 import CreateShelfBox from "../components/CreateShelfBox";
@@ -14,6 +14,7 @@ export default function Profile() {
   const [badges, setBadges] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [shelves, setShelves] = useState<any[]>([]);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchShelves = async () => {
@@ -36,12 +37,16 @@ export default function Profile() {
 
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("badges")
+        .select("badges, role")
         .eq("id", user.id)
         .single();
 
       if (error) console.error("Error fetching badges:", error.message);
-      else setBadges(profile?.badges || []);
+      else {
+        setBadges(profile?.badges || []);
+        setRole(profile?.role || null);
+      }
+
       setLoading(false);
     };
 
@@ -85,7 +90,7 @@ export default function Profile() {
   const email = user.user_metadata?.email || "Anonymous";
 
   return (
-    <div className="min-h-screen px-6 py-20 font-[Inter] text-gray-900 bg-gradient-to-b from-white to-[#f9fafb]">
+    <div className="min-h-screen px-6 py-20 font-[Inter] text-gray-900">
       <div className="max-w-5xl mx-auto flex flex-col gap-14">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
@@ -103,9 +108,9 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="text-center sm:text-left w-full">
-            <h1 className="text-3xl font-bold">{name}</h1>
-            <p className="text-gray-500 text-base mt-1">{email}</p>
+          <div className="text-center sm:text-left w-full font-[MerriWeather]">
+            <h1 className="text-5xl font-bold">{name}</h1>
+            <p className="text-gray-500 text-lg mt-1">{email}</p>
             <p className="text-sm text-gray-400 mt-2 italic">
               “A reader lives a thousand lives before he dies.” – George R.R.
               Martin
@@ -114,7 +119,7 @@ export default function Profile() {
             {/* Badges */}
             {badges.length > 0 && (
               <div className="mt-8">
-                <h3 className="text-sm text-gray-700 font-medium mb-3">
+                <h3 className="text-xl text-gray-400 font-bold mb-3">
                   Your Badges
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -133,15 +138,17 @@ export default function Profile() {
 
           {/* Shelf Creation */}
           {shelves.length < 5 ? (
-            <CreateShelfBox
-              onCreated={() => {
-                supabase
-                  .from("shelves")
-                  .select("id, name")
-                  .order("created_at")
-                  .then(({ data }) => setShelves(data || []));
-              }}
-            />
+            <div className="w-full sm:w-fit">
+              <CreateShelfBox
+                onCreated={() => {
+                  supabase
+                    .from("shelves")
+                    .select("id, name")
+                    .order("created_at")
+                    .then(({ data }) => setShelves(data || []));
+                }}
+              />
+            </div>
           ) : (
             <div className="mt-2 text-sm text-red-500 italic">
               ✋ Whoa! You can only have up to 5 shelves for now.
@@ -154,14 +161,18 @@ export default function Profile() {
               <Link
                 key={shelf.id}
                 to={`/shelf/${shelf.id}`}
-                className="relative group bg-gradient-to-br from-[#fffaf1] to-[#f9f4ea] border border-[#e8dccb] p-5 rounded-xl shadow-sm hover:shadow-lg transition-all"
+                className={`relative group p-6 rounded-xl shadow-md hover:shadow-xl transition-all border ${
+                  role === "admin"
+                    ? "bg-gradient-to-br from-[#e0f8f2] via-[#d0f0ff] to-[#c7e6ff] border-[#a0e3d3]"
+                    : "bg-gradient-to-br from-[#fffaf1] to-[#f9f4ea] border-[#e8dccb]"
+                }`}
               >
-                <div className="text-[#7a4f35] font-bold text-lg mb-1 flex items-center gap-2">
-                  📚 {shelf.name}
+                <div className="text-[#7a4f35] font-bold text-2xl mb-1 flex items-center gap-2">
+                  <Package className="w-6 h-6 inline" /> {shelf.name}
                 </div>
-                <p className="text-sm text-[#b39a85] italic">Shelf #{i + 1}</p>
-                <span className="absolute top-2 right-2 text-[10px] bg-[#f1e4d1] text-[#8c6346] px-2 py-[2px] rounded-full shadow-sm">
-                  🧺 Shelf
+                <p className="text-sm text-[#b39a85] italic flex items-center gap-2"><Archive className="w-4 h-4 inline" /> Shelf #{i + 1}</p>
+                <span className="absolute top-2 right-2 text-[10px] bg-[#f1e4d1] text-[#8c6346] px-2 py-[2px] rounded-full shadow-sm flex  gap-2">
+                  <Boxes className="w-4 h-4 inline" /> {shelf.id.slice(0, 8).toUpperCase()}
                 </span>
               </Link>
             ))}
@@ -170,26 +181,50 @@ export default function Profile() {
 
         {/* Stats Card */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
+          <div className="rounded-3xl border-2 border-gray-200 bg-white shadow-md overflow-hidden hover:shadow-lg transition">
             <div
-              className={`bg-gradient-to-r ${getUserGradient(
-                user.id
-              )} h-24 relative`}
+              className={`h-24 relative ${
+                role === "admin"
+                  ? "bg-gradient-to-r from-[#b2fce4] via-[#c4eaff] to-[#d0fff3]"
+                  : `bg-gradient-to-r ${getUserGradient(user.id)}`
+              }`}
             >
               <div className="absolute bottom-[-2rem] left-6 flex items-center gap-4">
-                <img
-                  src={avatar}
-                  alt={name}
-                  className="w-20 h-20 rounded-full border-4 border-white shadow object-cover"
-                />
+                <div
+                  className={`w-20 h-20 rounded-full border-4 shadow-lg ${
+                    role === "admin"
+                      ? "p-[2px] bg-gradient-to-r from-[#42e6b5] via-[#57d5ff] to-[#42e6b5] border-transparent"
+                      : "p-0 bg-white"
+                  }`}
+                >
+                  <img
+                    src={avatar}
+                    alt={name}
+                    className="w-full h-full rounded-full object-cover border-4 border-white"
+                  />
+                </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-white">{name}</h2>
-                  <div className="mt-1 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
-                    <Sparkles className="w-4 h-4" /> Gold Reader
+                  <h2
+                    className={`text-lg font-semibold ${
+                      role === "admin" ? "text-black" : "text-white"
+                    }`}
+                  >
+                    {name}
+                  </h2>
+                  <div
+                    className={`mt-1 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium border ${
+                      role === "admin"
+                        ? "bg-green-100 text-green-800 border-green-300"
+                        : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                    }`}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    {role === "admin" ? "Premium Admin" : "Gold Reader"}
                   </div>
                 </div>
               </div>
             </div>
+
             <div className="pt-16 pb-6 px-6 sm:px-8 bg-white">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-gray-700">
                 <div>
@@ -227,6 +262,26 @@ export default function Profile() {
             <b>50 books a year</b> by just reading 30 minutes a day!
           </p>
         </div>
+        {role === "admin" && (
+          <div className="rounded-3xl border-4 border-yellow-300 bg-gradient-to-br from-[#fff4d6] via-[#ffe6b3] to-[#ffec99] p-6 shadow-[0_4px_24px_rgba(255,215,0,0.4)] mt-10">
+            <h3 className="text-2xl font-bold text-yellow-800 flex items-center gap-3 mb-3">
+              👑 Premium Admin
+            </h3>
+            <p className="text-sm text-yellow-900 leading-relaxed">
+              You're not just a reader — you're a keeper of stories. Enjoy full
+              access to moderation tools, author management, and curation
+              controls.✨
+            </p>
+            <div className="mt-5">
+              <Link
+                to="/admin"
+                className="inline-block bg-yellow-600 hover:bg-yellow-700 text-white text-sm px-5 py-2 rounded-full shadow-lg transition"
+              >
+                Open Admin Dashboard
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

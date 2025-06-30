@@ -1,21 +1,25 @@
+// src/components/BookCard.tsx
+
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { Book } from "../models/Book";
 import BookCover from "./BookCover";
 import { useAuthor } from "../hooks/useAuthor";
+import { Star, MessageCircle } from "lucide-react";
 
 const MotionLink = motion(Link);
 
 interface BookCardProps {
-  book: Book & { is_favorite?: boolean };
+  book: Book & {
+    is_favorite?: boolean;
+    review_count?: number;
+    comment_count?: number;
+  };
   onToggleFavorite?: (id: string, current: boolean) => void;
   className?: string;
 }
 
-export default function BookCard({
-  book,
-  className = "",
-}: BookCardProps) {
+export default function BookCard({ book, className = "" }: BookCardProps) {
   const { author } = useAuthor(book.author);
 
   return (
@@ -71,6 +75,18 @@ export default function BookCard({
               })}
             </p>
           )}
+
+          {/* Review & Comment Stats */}
+          <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <Star size={12} className="text-yellow-500" fill="currentColor" />
+              {book.review_count ?? 0}
+            </span>
+            <span className="flex items-center gap-1">
+              <MessageCircle size={12} className="text-blue-400" fill="currentColor" />
+              {book.comment_count ?? 0}
+            </span>
+          </div>
         </div>
       </MotionLink>
     </div>

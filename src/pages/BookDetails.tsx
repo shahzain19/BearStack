@@ -1,17 +1,11 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useBooks } from "../hooks/useBooks";
 import BookCover from "../components/BookCover";
-import {
-  BookOpen,
-  ArrowLeft,
-  Heart,
-  Star,
-  Copy,
-  Share,
-  Trash2,
-} from "lucide-react";
+import { BookOpen, ArrowLeft, Heart, Star, Copy, Share } from "lucide-react";
 import AddToShelf from "../components/AddToShelf";
+import ReviewSection from "../components/ReviewSection";
+import CommentSection from "../components/CommentSection";
 
 export default function BookDetails() {
   const { id } = useParams();
@@ -24,10 +18,6 @@ export default function BookDetails() {
   const [showFull, setShowFull] = useState(false);
   const [progress, setProgress] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [comments, setComments] = useState<
-    { id: number; text: string; date: string }[]
-  >([]);
-  const commentRef = useRef<HTMLInputElement>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const added = book?.created_at
@@ -59,9 +49,6 @@ export default function BookDetails() {
     setIsFav(localStorage.getItem(`fav-${book.id}`) === "true");
     setRating(Number(localStorage.getItem(`rating-${book.id}`) || 0));
     setProgress(Number(localStorage.getItem(`progress-${book.id}`) || 0));
-    setComments(
-      JSON.parse(localStorage.getItem(`comments-${book.id}`) || "[]")
-    );
   }, [book]);
 
   useEffect(() => {
@@ -73,10 +60,6 @@ export default function BookDetails() {
   useEffect(() => {
     if (book) localStorage.setItem(`progress-${book.id}`, String(progress));
   }, [progress, book]);
-  useEffect(() => {
-    if (book)
-      localStorage.setItem(`comments-${book.id}`, JSON.stringify(comments));
-  }, [comments, book]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(window.location.href);
@@ -97,19 +80,6 @@ export default function BookDetails() {
       }
     } catch {}
   };
-
-  const addComment = () => {
-    if (!commentRef.current?.value.trim() || !book) return;
-    const newC = {
-      id: Date.now(),
-      text: commentRef.current.value,
-      date: new Date().toLocaleString(),
-    };
-    setComments((prev) => [newC, ...prev]);
-    commentRef.current.value = "";
-  };
-  const deleteComment = (cid: number) =>
-    setComments((c) => c.filter((cm) => cm.id !== cid));
 
   if (loading) {
     return (
@@ -275,46 +245,23 @@ export default function BookDetails() {
             </div>
             <AddToShelf bookId={book.id} />
 
-            <section className="mt-6 space-y-3">
-              <h2 className="text-lg font-semibold">Comments</h2>
-              <div className="flex gap-2">
-                <input
-                  ref={commentRef}
-                  type="text"
-                  placeholder="Leave a comment…"
-                  className="flex-1 px-3 py-2 rounded border border-gray-300 bg-white"
-                />
-                <button
-                  onClick={addComment}
-                  className="px-4 py-2 rounded bg-bearBrown text-white hover:bg-bearBrown/90 transition"
-                >
-                  Post
-                </button>
+            <div className="mt-16">
+              <div className="border-t border-[#f1e8cd] pt-12">
+                <h2 className="text-2xl font-bold text-bearBrown mb-6 flex items-center gap-2">
+                  📝 Community Feedback
+                </h2>
+
+                <div className="grid md:grid-cols-1 gap-8">
+                  <div className="bg-[#fffdf7] border border-[#f0e6d2] rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+                    <ReviewSection bookId={book.id} />
+                  </div>
+
+                  <div className="bg-[#fffdf7] border border-[#f0e6d2] rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+                    <CommentSection bookId={book.id} />
+                  </div>
+                </div>
               </div>
-              <ul className="space-y-2">
-                {comments.map((c) => (
-                  <li
-                    key={c.id}
-                    className="flex justify-between items-start bg-gray-100 p-2 rounded"
-                  >
-                    <div>
-                      <p className="text-sm">{c.text}</p>
-                      <span className="text-xs text-gray-500">{c.date}</span>
-                    </div>
-                    <button
-                      onClick={() => deleteComment(c.id)}
-                      className="text-gray-400 hover:text-red-500"
-                      title="Delete"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </li>
-                ))}
-                {comments.length === 0 && (
-                  <p className="text-gray-500 text-sm">No comments yet.</p>
-                )}
-              </ul>
-            </section>
+            </div>
           </article>
         </div>
 

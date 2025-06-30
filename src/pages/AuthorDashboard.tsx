@@ -22,7 +22,15 @@ export default function AuthorDashboard() {
     const total = books.length;
     const published = books.filter((b) => b.status === "published").length;
     const drafts = total - published;
-    return { total, published, drafts };
+    const reviews = books.reduce(
+      (sum, b) => sum + (b.book_reviews?.count || 0),
+      0
+    );
+    const comments = books.reduce(
+      (sum, b) => sum + (b.book_comments?.count || 0),
+      0
+    );
+    return { total, published, drafts, reviews, comments };
   }, [books]);
 
   const filteredBooks = useMemo(() => {
@@ -141,6 +149,8 @@ export default function AuthorDashboard() {
           <StatCard label="Total Books" value={stats.total} />
           <StatCard label="Published" value={stats.published} />
           <StatCard label="Drafts" value={stats.drafts} />
+          <StatCard label="Reviews" value={stats.reviews} />
+          <StatCard label="Comments" value={stats.comments} />
         </div>
       )}
 

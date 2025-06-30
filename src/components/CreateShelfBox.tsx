@@ -1,6 +1,7 @@
 // src/components/CreateShelfBox.tsx
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
+import { Plus } from "lucide-react";
 
 interface CreateShelfBoxProps {
   onCreated?: () => void;
@@ -48,9 +49,9 @@ export default function CreateShelfBox({ onCreated }: CreateShelfBoxProps) {
   };
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-md border max-w-md mx-auto space-y-4">
-      <h2 className="text-lg font-semibold text-gray-800">
-        ➕ Create New Shelf
+    <div className="bg-white p-5 rounded-xl shadow-md border border-gray-200 max-w-lg mx-auto space-y-4">
+      <h2 className="text-lg font-semibold text-gray-800 flex gap-2 items-center">
+        <Plus className="inline"/> Create New Shelf
       </h2>
 
       <div className="flex gap-2">
@@ -59,7 +60,7 @@ export default function CreateShelfBox({ onCreated }: CreateShelfBoxProps) {
           value={shelfName}
           onChange={(e) => setShelfName(e.target.value)}
           placeholder="e.g. Cozy Reads"
-          className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring focus:ring-cozy transition"
+          className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring focus:ring-none transition border-gray-300 text-gray-800"
         />
         <button
           onClick={handleCreateShelf}

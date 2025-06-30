@@ -27,6 +27,8 @@ import CreateNookPage from "./pages/CreateNookPage";
 import NookDetailPage from "./pages/NookDetailPage";
 import Profile from "./pages/Profile";
 import ShelfPage from "./pages/ShelfPage";
+import BookReviews from "./pages/BookReviews";
+import BookComments from "./pages/BookComments";
 
 inject();
 
@@ -55,6 +57,8 @@ export default function App() {
           <Route path="/blog/new" element={<NewBlog />} />
           <Route path="/blog/:slug" element={<BlogReader />} />
           <Route path="/shelf/:id" element={<ShelfPage />} />
+          <Route path="/book/:id/reviews" element={<BookReviews />} />
+          <Route path="/book/:id/comments" element={<BookComments />} />
 
           {/* 🔒 Protected Routes */}
           <Route path="/library" element={<Library />} />
