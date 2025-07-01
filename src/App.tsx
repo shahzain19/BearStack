@@ -29,6 +29,9 @@ import Profile from "./pages/Profile";
 import ShelfPage from "./pages/ShelfPage";
 import BookReviews from "./pages/BookReviews";
 import BookComments from "./pages/BookComments";
+import Events from "./pages/Events";
+import AdminEvents from "./pages/AdminEvents";
+import EventDetails from "./pages/EventDetails";
 
 inject();
 
@@ -59,6 +62,9 @@ export default function App() {
           <Route path="/shelf/:id" element={<ShelfPage />} />
           <Route path="/book/:id/reviews" element={<BookReviews />} />
           <Route path="/book/:id/comments" element={<BookComments />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/events/:id" element={<EventDetails />} />
+          <Route path="/admin/events" element={<ProtectedRoute><AdminEvents /></ProtectedRoute>} />
 
           {/* 🔒 Protected Routes */}
           <Route path="/library" element={<Library />} />

@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Loader, Sparkles, Calendar, Fingerprint, Link2, Boxes, Package, Archive } from "lucide-react";
+import {
+  Loader,
+  Sparkles,
+  Calendar,
+  Fingerprint,
+  Link2,
+  Boxes,
+  Package,
+  Archive,
+} from "lucide-react";
 import MagicBadge from "../components/MagicBadge";
 import { Link } from "react-router-dom";
 import CreateShelfBox from "../components/CreateShelfBox";
@@ -90,7 +99,7 @@ export default function Profile() {
   const email = user.user_metadata?.email || "Anonymous";
 
   return (
-    <div className="min-h-screen px-6 py-20 font-[Inter] text-gray-900">
+    <div className="min-h-screen px-6 py-20 font-sans text-gray-900">
       <div className="max-w-5xl mx-auto flex flex-col gap-14">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
@@ -102,13 +111,13 @@ export default function Profile() {
             >
               <img
                 src={avatar}
-                alt={name}
+                alt={`${name}'s avatar`}
                 className="w-full h-full rounded-full object-cover border-4 border-white shadow-lg"
               />
             </div>
           </div>
 
-          <div className="text-center sm:text-left w-full font-[MerriWeather]">
+          <div className="text-center sm:text-left w-full font-serif">
             <h1 className="text-5xl font-bold">{name}</h1>
             <p className="text-gray-500 text-lg mt-1">{email}</p>
             <p className="text-sm text-gray-400 mt-2 italic">
@@ -132,11 +141,10 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Shelves */}
-        <div className="mt-8">
+        {/* Shelves Section */}
+        <div>
           <h2 className="text-xl font-bold mb-4">🧺 Your Shelves</h2>
 
-          {/* Shelf Creation */}
           {shelves.length < 5 ? (
             <div className="w-full sm:w-fit">
               <CreateShelfBox
@@ -155,7 +163,6 @@ export default function Profile() {
             </div>
           )}
 
-          {/* Shelf List */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-6">
             {shelves.map((shelf, i) => (
               <Link
@@ -168,11 +175,14 @@ export default function Profile() {
                 }`}
               >
                 <div className="text-[#7a4f35] font-bold text-2xl mb-1 flex items-center gap-2">
-                  <Package className="w-6 h-6 inline" /> {shelf.name}
+                  <Package className="w-6 h-6" /> {shelf.name}
                 </div>
-                <p className="text-sm text-[#b39a85] italic flex items-center gap-2"><Archive className="w-4 h-4 inline" /> Shelf #{i + 1}</p>
-                <span className="absolute top-2 right-2 text-[10px] bg-[#f1e4d1] text-[#8c6346] px-2 py-[2px] rounded-full shadow-sm flex  gap-2">
-                  <Boxes className="w-4 h-4 inline" /> {shelf.id.slice(0, 8).toUpperCase()}
+                <p className="text-sm text-[#b39a85] italic flex items-center gap-2">
+                  <Archive className="w-4 h-4" /> Shelf #{i + 1}
+                </p>
+                <span className="absolute top-2 right-2 text-[10px] bg-[#f1e4d1] text-[#8c6346] px-2 py-[2px] rounded-full shadow-sm flex gap-2">
+                  <Boxes className="w-4 h-4" />{" "}
+                  {shelf.id.slice(0, 8).toUpperCase()}
                 </span>
               </Link>
             ))}
@@ -181,7 +191,7 @@ export default function Profile() {
 
         {/* Stats Card */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="rounded-3xl border-2 border-gray-200 bg-white shadow-md overflow-hidden hover:shadow-lg transition">
+          <div className="rounded-3xl border-2 border-gray-200 bg-white shadow-md hover:shadow-lg transition overflow-hidden">
             <div
               className={`h-24 relative ${
                 role === "admin"
@@ -199,7 +209,7 @@ export default function Profile() {
                 >
                   <img
                     src={avatar}
-                    alt={name}
+                    alt="User Avatar"
                     className="w-full h-full rounded-full object-cover border-4 border-white"
                   />
                 </div>
@@ -262,6 +272,8 @@ export default function Profile() {
             <b>50 books a year</b> by just reading 30 minutes a day!
           </p>
         </div>
+
+        {/* Admin Callout */}
         {role === "admin" && (
           <div className="rounded-3xl border-4 border-yellow-300 bg-gradient-to-br from-[#fff4d6] via-[#ffe6b3] to-[#ffec99] p-6 shadow-[0_4px_24px_rgba(255,215,0,0.4)] mt-10">
             <h3 className="text-2xl font-bold text-yellow-800 flex items-center gap-3 mb-3">

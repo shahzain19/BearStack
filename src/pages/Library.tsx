@@ -2,6 +2,7 @@ import { useBooks } from "../hooks/useBooks";
 import BookGrid from "../components/BookGrid";
 import { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   SortAsc,
@@ -13,6 +14,7 @@ import {
   Bookmark,
   User,
   LampDesk,
+  CalendarCheck2,
 } from "lucide-react";
 import type { Book } from "../models/Book";
 import { supabase } from "../lib/supabase";
@@ -47,7 +49,6 @@ export function ThemeToggle() {
   );
 }
 
-
 interface BookWithExtras extends Book {
   genre?: string;
   created_at?: string;
@@ -59,7 +60,10 @@ export default function Library() {
   const books = rawBooks as unknown as BookWithExtras[];
   const navigate = useNavigate();
 
-  const [query, setQuery] = useState("");
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialQuery = params.get("search") || "";
+  const [query, setQuery] = useState(initialQuery);
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [showFavorites, setShowFavorites] = useState(false);
@@ -181,7 +185,7 @@ export default function Library() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <h1 className="text-4xl font-bold tracking-tight flex items-center gap-4">
+        <h1 className="font-[Merriweather] text-4xl font-bold tracking-tight flex items-center gap-4">
           BearStacks
         </h1>
 
@@ -189,7 +193,7 @@ export default function Library() {
           {userRole === "admin" && (
             <Link
               to="/admin-approval"
-              className="flex items-center gap-2 text-sm border border-[#aaa] px-4 py-2 rounded-full bg-white shadow-sm transition hover:bg-gray-100 hover:text-black hover:border-black"
+              className="flex items-center gap-2 text-sm px-4 py-2 rounded-md bg-[#5E8A75] text-white hover:bg-[#5E8A75] transition"
             >
               <LayoutDashboard size={16} /> Admin Dashboard
             </Link>
@@ -199,6 +203,12 @@ export default function Library() {
             className="flex text-gray-500 items-center gap-2 text-sm hover:bg-gray-100 hover:text-yellow-400 hover:border-black"
           >
             <LampDesk size={35} />
+          </Link>
+           <Link
+            to="/events"
+            className="flex text-gray-500 items-center gap-2 text-sm hover:bg-gray-100 hover:border-black"
+          >
+            <CalendarCheck2 size={35} />
           </Link>
           <Link
             to="/dashboard"
@@ -216,7 +226,7 @@ export default function Library() {
           <div className="relative  avatar-dropdown">
             <button
               onClick={() => setAvatarDropdownOpen((prev) => !prev)}
-              className="flex text-gray-400 items-center gap-2 text-sm px-4 py-2 rounded-full bg-white hover:text-gray-900 shadow-sm transition cursor-pointer"
+              className="flex text-gray-400 items-center gap-2 text-sm px-4 py-2 hover:text-gray-900 shadow-sm transition cursor-pointer"
             >
               <User size={47} />
             </button>
@@ -266,9 +276,14 @@ export default function Library() {
             type="text"
             placeholder="Search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full px-4 py-2 pl-10 focus:outline-none htext-base rounded-xl border-none"
+            onChange={(e) => {
+              const val = e.target.value;
+              setQuery(val);
+              navigate(`/library?search=${encodeURIComponent(val)}`);
+            }}
+            className="w-full px-4 py-2 pl-10 focus:outline-none text-base rounded-xl border-none"
           />
+
           <Search
             className="inline items-center absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             size={24}

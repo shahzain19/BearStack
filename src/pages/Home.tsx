@@ -1,14 +1,30 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { BookOpen, Info, LayoutDashboard, PenLine, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpen,
+  Info,
+  LayoutDashboard,
+  PenLine,
+  Search,
+  X,
+} from "lucide-react";
 
 export default function Landing() {
   const [session, setSession] = useState<null | unknown>(null);
   const [checking, setChecking] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [blogs, setBlogs] = useState<any[]>([]);
-  const [blogsLoading, setBlogsLoading] = useState(true);
+  const [, setBlogs] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [, setBlogsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/library?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -51,124 +67,103 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fff3cd] text-[#2e2e2e]">
+    <div className="font-[MerriWeather] min-h-screen flex flex-col bg-[#1a120b] text-[#f3e9d2]">
       {/* Header */}
-      <header className="glass-navbar p-4 flex justify-between items-center mx-4 mt-4 rounded-2xl shadow-lg backdrop-blur-md text-[#2e2e2e] relative z-50">
-        <div className="flex items-center gap-2">
-          <img src="/icon.png" alt="BearStacks Logo" className="w-8 h-8" />
-          <h1 className="text-2xl font-bold tracking-tight">BearStacks</h1>
-        </div>
+      <header className="w-full flex items-center justify-between py-6 px-12 bg-transparent fixed top-0 z-50 backdrop-blur-2xl">
+        <h1 className="text-2xl font-bold text-white">BearStacks</h1>
+        <nav className="hidden md:flex gap-6 text-sm text-gray-200">
+          <Link to="/library">Library</Link>
+          <Link to="/blogs">Blogs</Link>
+          <Link to="/nooks">Nooks</Link>
+          <Link to="/about">About</Link>
+        </nav>
+        <Link
+          to="/login"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-indigo-700 hover:bg-indigo-600 text-white font-medium px-4 py-2 rounded-xl text-sm shadow-md"
+        >
+          <ArrowUpRight className="w-4 h-4" /> Login
+        </Link>
       </header>
 
       {/* Hero */}
       <section
-        className="relative min-h-screen bg-gradient-to-b from-[#fff3cd] via-[#fff8e6] to-white overflow-hidden px-6 sm:px-12 pt-0 pb-20 flex items-center"
+        className="relative flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 bg-cover bg-center bg-no-repeat min-h-screen"
         style={{
-          opacity: 0.9,
+          backgroundImage: "url('/LibraryBg2.jpg')",
         }}
       >
-        {/* Background Blobs + Sparkles */}
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          {/* Original Blobs */}
-          <div className="absolute w-[450px] h-[450px] bg-amber-300 rounded-full opacity-30 blur-[120px] top-[-100px] left-[-100px] animate-float-slow" />
-          <div className="absolute w-[450px] h-[450px] bg-amber-300 rounded-full opacity-30 blur-[120px] top-[50px] left-[-150px] animate-float-reverse" />
-          <div className="absolute w-72 h-72 bg-indigo-200 rounded-full blur-3xl bottom-20 right-20 animate-float" />
-          <div className="absolute w-64 h-64 bg-pink-200 rounded-full blur-[100px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float-reverse" />
-          <div className="absolute w-52 h-52 bg-emerald-200 rounded-full blur-[90px] top-10 right-10 animate-float-slow" />
-          <div className="absolute w-40 h-40 bg-blue-100 rounded-full blur-[70px] bottom-10 left-16 animate-float-reverse" />
-          <div className="absolute w-36 h-36 bg-yellow-100 rounded-full opacity-30 blur-[80px] top-1/3 left-12 animate-float" />
-          <div className="absolute w-24 h-24 bg-pink-100 rounded-full opacity-20 blur-[60px] top-10 left-1/2 -translate-x-1/2 animate-float" />
-
-          {/* Sparkles */}
-          {[...Array(10)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-[2px] h-[2px] bg-white rounded-full blur-sm animate-pulse`}
-              style={{
-                top: `${Math.random() * 90}%`,
-                left: `${Math.random() * 90}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                opacity: 0.6,
+        <div className="relative max-w-5xl z-10 w-full">
+          <div className="relative mb-6 max-w-xl mx-auto">
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
               }}
+              className="w-full rounded-full border border-gray-800 py-2 px-4 pr-10 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-transparent"
             />
-          ))}
-        </div>
-
-        {/* Content */}
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center w-full z-10">
-          {/* Left Text Section */}
-          <div className="text-center md:text-left">
-            <span className="bg-amber-100 text-amber-700 px-4 py-1 rounded-full text-sm font-medium mb-4 inline-block shadow-sm">
-              ✨ Discover + Create + Share
-            </span>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight mb-6">
-              Your Cozy Corner for <br className="hidden md:block" />
-              Reading & Writing 📚
-            </h1>
-
-            <p className="text-gray-600 text-lg max-w-xl mb-8 mx-auto md:mx-0">
-              From magical adventures to your own original tales —
-              <span className="text-indigo-600 font-semibold">
-                {" "}
-                BearStacks{" "}
-              </span>
-              is your home to read, write, and share books in a
-              <span className="font-semibold text-gray-800">
-                {" "}
-                beautiful{" "}
-              </span>{" "}
-              and
-              <span className="font-semibold text-gray-800"> simple </span> way.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4 mb-4">
-              <Link
-                to="/library"
-                className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2"
+            {searchQuery && (
+              <button
+                onClick={handleSearch}
+                className="absolute right-3 top-2.5 text-amber-500"
               >
-                <BookOpen className="w-5 h-5" />
-                Get Started Free
-              </Link>
-              <Link
-                to="/about"
-                className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-6 py-3 rounded-full transition transform hover:scale-105 flex items-center gap-2"
-              >
-                <Info className="w-5 h-5" />
-                Learn More
-              </Link>
-            </div>
-
-            <p className="text-sm text-gray-500">
-              100% free — start your cozy reading & writing journey today!
-            </p>
+                <Search className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
-          {/* Right Image Section */}
-          <div className="flex justify-center md:justify-end">
-            <img
-              src="/Library.png"
-              alt="BearStacks Preview"
-              className="rounded-3xl w-[320px] sm:w-[400px] md:w-[600px] transition hover:scale-[1.02]"
-            />
+          <h2 className="text-4xl sm:text-7xl font-extrabold tracking-tight text-white leading-tighter drop-shadow-xl">
+            Discover Books & <br /> Share Yours
+          </h2>
+
+          <p className="text-gray-200 text-base mt-4 max-w-md mx-auto">
+            A warm reading and writing space for creators and book lovers.
+            Explore original stories, write your own, and build your cozy
+            digital library.
+          </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/library"
+              className="inline-flex items-center gap-2 px-9 py-4 bg-gradient-to-br from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-white text-base font-semibold rounded-full shadow-[0_4px_24px_rgba(255,200,100,0.3)] transition duration-300 backdrop-blur-md"
+            >
+              <BookOpen className="w-5 h-5" /> Start Reading
+            </Link>
+
+            <Link
+              to="/about"
+              className="inline-flex items-center gap-2 px-9 py-4 bg-transparent text-white text-base font-semibold rounded-full shadow-[0_4px_24px_rgba(255,150,150,0.3)] transition duration-300 backdrop-blur-md"
+            >
+              <Info className="w-5 h-5" /> Learn More
+            </Link>
           </div>
+
+          <p className="text-sm text-gray-300 mt-4">
+            Free Forever ~ No login for browsing books
+          </p>
         </div>
       </section>
 
-      {/* Screenshots Section */}
-      <section className="bg-[#fffef7] py-20 px-4 text-center">
-        <h3 className="text-3xl font-bold mb-6">A Peek Inside BearStacks</h3>
-        <p className="text-sm max-w-xl mx-auto mb-12 opacity-80">
-          Screenshots from our cozy corners — your library, dashboard, and story
-          editor.
+      <section
+        className="relative py-24 px-4 text-center bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/LibraryBg3.jpg')" }}
+      >
+        <h3 className="text-[48px] font-bold mb-6 text-white">
+          Inside BearStacks
+        </h3>
+        <p className="text-[20px] max-w-xl mx-auto mb-12 text-white/80">
+          A cozy tour through your Library, Dashboard, and Editor — plus
+          features you’ll love.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        {/* Screenshots */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-20">
           {(["Library", "Dashboard", "Editor"] as IconName[]).map((name) => (
             <div
               key={name}
-              className="group relative overflow-hidden rounded-xl shadow-md transform hover:scale-105 transition border border-gray-300/70 cursor-pointer"
+              className="group relative overflow-hidden rounded-xl shadow-md transform hover:scale-105 transition border border-white/20 cursor-pointer"
               onClick={() => setSelectedImage(`/${name}.png`)}
             >
               <img
@@ -176,7 +171,7 @@ export default function Landing() {
                 alt={name}
                 className="rounded-xl object-cover w-full h-full"
               />
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition">
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition">
                 <span className="text-sm font-semibold flex items-center">
                   {iconMap[name]} {name}
                 </span>
@@ -185,36 +180,11 @@ export default function Landing() {
           ))}
         </div>
 
-        {/* Modal */}
-        {selectedImage && (
-          <div
-            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-            onClick={() => setSelectedImage(null)}
-          >
-            <div
-              className="relative max-w-4xl w-full p-4"
-              onClick={(e) => e.stopPropagation()} // prevent closing on image click
-            >
-              <button
-                className="absolute top-4 right-4 text-white hover:text-red-400 transition"
-                onClick={() => setSelectedImage(null)}
-              >
-                <X className="w-6 h-6" />
-              </button>
-              <img
-                src={selectedImage}
-                alt="Full view"
-                className="w-full rounded-xl shadow-xl"
-              />
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* Features */}
-      <section className="bg-white py-20 px-4 text-center">
-        <h3 className="text-3xl font-bold mb-12">Features You'll Love</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto text-left text-sm">
+        {/* Features */}
+        <h4 className="text-3xl font-bold mb-10 text-white">
+          Features You'll Love
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto text-left text-white/90 text-sm">
           {[
             {
               icon: "📖",
@@ -242,11 +212,41 @@ export default function Landing() {
             </div>
           ))}
         </div>
+
+        {/* Screenshot Modal */}
+        {selectedImage && (
+          <div
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div
+              className="relative max-w-4xl w-full p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute top-4 right-4 text-white hover:text-red-400 transition"
+                onClick={() => setSelectedImage(null)}
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <img
+                src={selectedImage}
+                alt="Full view"
+                className="w-full rounded-xl shadow-xl"
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Books of the Month */}
-      <section className="bg-[#fffef7] py-20 px-4 text-center">
-        <h3 className="text-9xl font-extrabold mb-8 tracking-[-10px]">Books of the Month</h3>
+      <section
+        className="relative py-20 px-4 text-center bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/LibraryBg.png')" }}
+      >
+        <h3 className="text-[72px] font-extrabold mb-8 tracking-[-5px]">
+          Books of the Month
+        </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {["1750840837967.png", "1750702725861.png", "1750688847649.png"].map(
             (cover) => (
@@ -260,80 +260,11 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="bg-white py-20 px-4 text-center">
-        
-        <h3 className="text-8xl font-bold mb-8 tracking-[-4px]">From the <span className="text-amber-700"> BearStacks </span>Blog</h3>
-        <p className="text-sm max-w-xl mx-auto mb-12 opacity-80">
-          Fresh thoughts, cozy advice, and writing insights from the BearStacks
-          community.
-        </p>
-
-        {blogsLoading ? (
-          <p className="text-gray-500 text-sm">Loading blogs...</p>
-        ) : blogs.length === 0 ? (
-          <p className="text-gray-500 text-sm">
-            No blog posts yet. Check back soon!
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-6xl mx-auto text-left font-[Inter]">
-            {blogs.map((blog) => (
-              <Link
-                key={blog.slug}
-                to={`/blog/${blog.slug}`}
-                className="rounded-xl overflow-hidden border border-gray-200 shadow-md hover:scale-[1.02] transition group bg-white"
-              >
-                <div className="p-4">
-                  <h4 className="text-xl font-semibold mb-1">{blog.title}</h4>
-                  <div
-        className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: blog.content.slice(0, 200) + "..." }}
-      />
-
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-10">
-          <Link
-            to="/blog"
-            className="text-amber-700 hover:text-black transition text-sm underline font-medium"
-          >
-            View All Blog Posts →
-          </Link>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="bg-white py-20 px-4 text-center">
-        <h3 className="text-3xl font-bold mb-10">
-          ❓ Frequently Asked Questions
-        </h3>
-        <div className="max-w-3xl mx-auto text-left space-y-6 text-sm opacity-80">
-          <div>
-            <p className="font-semibold">Is BearStacks free?</p>
-            <p>Yes! All core features are free for all users.</p>
-          </div>
-          <div>
-            <p className="font-semibold">Can I write my own stories?</p>
-            <p>
-              Absolutely. Cozy Bear has a distraction-free, beautiful writing
-              editor.
-            </p>
-          </div>
-          <div>
-            <p className="font-semibold">Is this like Goodreads?</p>
-            <p>
-              Sort of — but think more personal, less corporate, and a lot more
-              cozy 🧸
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Final CTA */}
-      <section className="bg-[#fff3cd] py-24 px-4 text-center animate-fade-in">
+      <section
+        className="relative py-24 px-4 text-center bg-cover bg-center bg-no-repeat animate-fade-in"
+        style={{ backgroundImage: "url('/LibraryBg8.jpg')" }}
+      >
         <h3 className="text-4xl font-extrabold mb-4">Join BearStacks Today</h3>
         <p className="mb-8 opacity-80 text-md max-w-xl mx-auto">
           Whether you’re a reader, a writer, or somewhere in between — this
@@ -348,7 +279,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="p-4 text-center text-sm opacity-70">
+      <footer className="p-4 text-center text-sm opacity-70 bg-transparent text-[#d9d9d9]">
         Made with ❤️ • © {new Date().getFullYear()}
       </footer>
     </div>
