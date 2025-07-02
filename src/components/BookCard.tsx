@@ -37,11 +37,11 @@ export default function BookCard({ book, className = "" }: BookCardProps) {
       />
 
       <div className="mt-4 text-center">
-        <h3 className="font-[MerriWeather] text-base font-bold text-bearBrown leading-snug truncate transition">
+        <h3 className="font-[MerriWeather] text-base font-bold leading-snug truncate transition">
           {book.title}
         </h3>
 
-        <p className="leading-snug line-clamp-2 text-gray-600 text-sm mt-1 text-left">
+        <p className="leading-snug line-clamp-2 text-[var(--text-secondary))] text-sm mt-1 text-left">
           {book.summary}
         </p>
 
@@ -57,7 +57,7 @@ export default function BookCard({ book, className = "" }: BookCardProps) {
             ) : (
               <div className="w-6 h-6 rounded-full bg-gray-300" />
             )}
-            <p className="text-sm font-semibold text-gray-800 truncate">
+            <p className="text-sm font-semibold text-[var(--text-secondary)] truncate">
               {author?.pen_name ?? "Loading..."}
             </p>
           </div>

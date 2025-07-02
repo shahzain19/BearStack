@@ -57,13 +57,14 @@ html.cozy {
 
 /* === Theme: Medieval (Improved) === */
 html.medieval {
-  --bg:  #eae0c5;
-  --text: #3b2f1c;
+  --bg:  #2e2216;
+  --text: #ffdca3;
   --card: #d3c0a6;
-  --border: #ffeccd;
+  --border: #3b362f;
   --accent: #5c3d1b;
   --highlight: #c9a96b;
   --ink-black: #1f140a;
+  --text-secondary: #818181;
   --deep-red: #7a2e1b;
   --emerald: #3a5f48;
   --shadow: #2c2415;
@@ -227,4 +228,14 @@ button {
   --text: #3b2f27;
   --card: #fff9f3;
   --accent: #b0764b;
+}
+
+
+.glassy-text {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255, 255, 255, 0.164));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 1px 3px rgba(255, 255, 255, 0.25),
+    0 2px 6px rgba(255, 255, 255, 0.742);
 }

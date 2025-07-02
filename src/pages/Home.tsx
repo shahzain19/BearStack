@@ -67,7 +67,7 @@ export default function Landing() {
   }
 
   return (
-    <div className="font-[MerriWeather] min-h-screen flex flex-col bg-[#1a120b] text-[#f3e9d2]">
+    <div className="font-[Cardo] min-h-screen flex flex-col bg-[#2e2216] text-[#f3e9d2]">
       {/* Header */}
       <header className="w-full flex items-center justify-between py-6 px-12 bg-transparent fixed top-0 z-50 backdrop-blur-2xl">
         <h1 className="text-2xl font-bold text-white">BearStacks</h1>
@@ -114,7 +114,7 @@ export default function Landing() {
             )}
           </div>
 
-          <h2 className="text-4xl sm:text-7xl font-extrabold tracking-tight text-white leading-tighter drop-shadow-xl">
+          <h2 className="font-[MedievalSharp] text-4xl sm:text-8xl font-extrabold tracking-tight leading-tighter glassy-text">
             Discover Books & <br /> Share Yours
           </h2>
 
@@ -127,7 +127,7 @@ export default function Landing() {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/library"
-              className="inline-flex items-center gap-2 px-9 py-4 bg-gradient-to-br from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-white text-base font-semibold rounded-full shadow-[0_4px_24px_rgba(255,200,100,0.3)] transition duration-300 backdrop-blur-md"
+              className="inline-flex items-center gap-2 px-9 py-4 bg-gradient-to-r from-yellow-500 to-indigo-600 hover:from-yellow-400 hover:to-amber-500 text-white text-base font-semibold rounded-full shadow-[0_4px_24px_rgba(255,200,100,0.3)] transition duration-300 backdrop-blur-md"
             >
               <BookOpen className="w-5 h-5" /> Start Reading
             </Link>
