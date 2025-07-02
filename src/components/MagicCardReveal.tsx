@@ -127,7 +127,7 @@ export default function WizardCardReveal({ onDone }: { onDone?: () => void }) {
             Wizard
           </h1>
           <p className="wizard-desc text-base text-indigo-200 leading-relaxed">
-            The cosmos has chosen you.
+            We have chosen you.
             <br />
             <span className="text-indigo-100 font-semibold">
               Rise. Channel. Transcend.

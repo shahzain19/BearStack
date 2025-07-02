@@ -98,10 +98,13 @@ export default function BookDetails() {
 
   if (!book) return <p className="p-6 text-center">Book not found.</p>;
 
-  const genreAura = genreThemes[book.genre?.toLowerCase()] || genreThemes.default;
+  const genreKey = book.genre?.toLowerCase() || "default";
+  const genreAura = genreThemes[genreKey];
 
   return (
-    <section className={`relative max-w-6xl mx-auto my-10 rounded-3xl shadow-xl overflow-hidden ${genreAura}`}>
+    <section
+      className={`relative max-w-6xl mx-auto my-10 rounded-3xl shadow-xl overflow-hidden ${genreAura}`}
+    >
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute w-72 h-72 bg-yellow-100/40 rounded-full blur-3xl -top-10 -left-10" />
         <div className="absolute w-72 h-72 bg-[#ffeccc]/30 rounded-full blur-3xl bottom-0 -right-10" />
@@ -145,7 +148,10 @@ export default function BookDetails() {
                 <h1 className="text-4xl/tight font-bold text-bearBrown flex-1">
                   {book.title}
                 </h1>
-                <button onClick={() => setIsFav((f) => !f)} aria-label="Favorite">
+                <button
+                  onClick={() => setIsFav((f) => !f)}
+                  aria-label="Favorite"
+                >
                   <Heart
                     size={28}
                     fill={isFav ? "currentColor" : "none"}
@@ -153,7 +159,10 @@ export default function BookDetails() {
                     className="hover:text-red-600 transition"
                   />
                 </button>
-                <button onClick={() => setIsBookmarked((b) => !b)} aria-label="Bookmark">
+                <button
+                  onClick={() => setIsBookmarked((b) => !b)}
+                  aria-label="Bookmark"
+                >
                   <Star
                     size={24}
                     className="hover:text-blue-600 transition ml-2"
@@ -170,7 +179,10 @@ export default function BookDetails() {
                   </span>
                 )}
                 {book.author && (
-                  <Link to={`/author/${book.author}`} className="underline hover:text-bearBrown">
+                  <Link
+                    to={`/author/${book.author}`}
+                    className="underline hover:text-bearBrown"
+                  >
                     Author Profile
                   </Link>
                 )}
@@ -180,7 +192,11 @@ export default function BookDetails() {
 
             {/* Summary */}
             <div className="bg-[#fffaf0] border border-[#f3e9c0] p-4 rounded-xl shadow-inner text-[17px] text-gray-800">
-              <p className={`${showFull ? "" : "line-clamp-4 whitespace-pre-line"}`}>
+              <p
+                className={`${
+                  showFull ? "" : "line-clamp-4 whitespace-pre-line"
+                }`}
+              >
                 {book.summary}
               </p>
               {book.summary?.length > 140 && (
