@@ -1,8 +1,7 @@
 import { useBooks } from "../hooks/useBooks";
 import BookGrid from "../components/BookGrid";
 import { useState, useMemo, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   SortAsc,
@@ -19,35 +18,6 @@ import {
 import type { Book } from "../models/Book";
 import { supabase } from "../lib/supabase";
 import { motion } from "framer-motion";
-import { setTheme, getStoredTheme } from "../contexts/ThemeContext";
-
-export function ThemeToggle() {
-  const [theme, setThemeState] = useState<"light" | "dark" | "cozy">("light");
-
-  useEffect(() => {
-    const stored = getStoredTheme();
-    setTheme(stored);
-    setThemeState(stored);
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = e.target.value as "light" | "dark" | "cozy";
-    setTheme(selected);
-    setThemeState(selected);
-  };
-
-  return (
-    <select
-      value={theme}
-      onChange={handleChange}
-      className="border px-3 py-1 rounded-full text-sm bg-[var(--card)] text-[var(--text)]"
-    >
-      <option value="light">☀️ Light</option>
-      <option value="dark">🌙 Dark</option>
-      <option value="cozy">🍂 Cozy</option>
-    </select>
-  );
-}
 
 interface BookWithExtras extends Book {
   genre?: string;
@@ -59,10 +29,11 @@ export default function Library() {
   const { books: rawBooks, loading } = useBooks();
   const books = rawBooks as unknown as BookWithExtras[];
   const navigate = useNavigate();
-
   const location = useLocation();
+
   const params = new URLSearchParams(location.search);
   const initialQuery = params.get("search") || "";
+
   const [query, setQuery] = useState(initialQuery);
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -71,6 +42,22 @@ export default function Library() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
   const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
+
+  const [theme, setTheme] = useState<"light" | "dark" | "cozy" | "medieval">(
+    (localStorage.getItem("theme") as any) || "light"
+  );
+
+  // Apply theme to HTML root element
+  useEffect(() => {
+    document.documentElement.classList.remove(
+      "light",
+      "dark",
+      "cozy",
+      "medieval"
+    );
+    document.documentElement.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     const fetchUserRoleAndCreatedAt = async () => {
@@ -108,7 +95,6 @@ export default function Library() {
         setAvatarDropdownOpen(false);
       }
     };
-
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
@@ -151,13 +137,12 @@ export default function Library() {
 
     if (query) {
       const q = query.toLowerCase();
-      result = result.filter((book) => {
-        return (
+      result = result.filter(
+        (book) =>
           book.title?.toLowerCase().includes(q) ||
           book.summary?.toLowerCase().includes(q) ||
           book.author_pen_name?.toLowerCase().includes(q)
-        );
-      });
+      );
     }
 
     if (selectedGenre !== "All") {
@@ -178,18 +163,30 @@ export default function Library() {
   }, [books, query, selectedGenre, sortOrder, showFavorites, userCreatedAt]);
 
   return (
-    <div className="max-w-[1700px] mx-auto px-4 md:px-8 py-8 font-[Inter] leading-relaxed bg-white min-h-screen">
+    <div className="max-w-[1700px] mx-auto px-4 md:px-8 py-8 font-[var(--font)] leading-relaxed min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      {/* Header */}
       <motion.div
         className="flex justify-between items-center mb-12 flex-wrap gap-4"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <h1 className="font-[Merriweather] text-4xl font-bold tracking-tight flex items-center gap-4">
+        <h1 className="text-4xl font-bold tracking-tight flex items-center gap-4">
           BearStacks
         </h1>
 
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-3 flex-wrap items-center">
+          <select
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as any)}
+            className="border px-3 py-1 rounded-full text-sm bg-[var(--card)] text-[var(--text)]"
+          >
+            <option value="light">☀️ Light</option>
+            <option value="dark">🌙 Dark</option>
+            <option value="cozy">🍂 Cozy</option>
+            <option value="medieval">🏰 Medieval</option>
+          </select>
+
           {userRole === "admin" && (
             <Link
               to="/admin-approval"
@@ -198,46 +195,35 @@ export default function Library() {
               <LayoutDashboard size={16} /> Admin Dashboard
             </Link>
           )}
-          <Link
-            to="/nooks"
-            className="flex text-gray-500 items-center gap-2 text-sm hover:bg-gray-100 hover:text-yellow-400 hover:border-black"
-          >
+          <Link to="/nooks" className="text-gray-500 hover:text-yellow-400">
             <LampDesk size={35} />
           </Link>
-           <Link
-            to="/events"
-            className="flex text-gray-500 items-center gap-2 text-sm hover:bg-gray-100 hover:border-black"
-          >
+          <Link to="/events" className="text-gray-500 hover:text-black">
             <CalendarCheck2 size={35} />
           </Link>
-          <Link
-            to="/dashboard"
-            className="flex text-gray-500 items-center gap-2 text-sm hover:bg-gray-100 hover:text-black hover:border-black"
-          >
+          <Link to="/dashboard" className="text-gray-500 hover:text-black">
             <LayoutDashboard size={35} />
           </Link>
           <Link
             to="/bookmarks"
-            className="flex text-gray-500 items-center gap-2 text-sm px-4 py-2 rounded-full bg-white hover:text-gray-900 shadow-sm transition"
+            className="text-gray-500 hover:text-gray-900"
           >
             <Bookmark size={35} />
           </Link>
-
-          <div className="relative  avatar-dropdown">
+          <div className="relative avatar-dropdown">
             <button
               onClick={() => setAvatarDropdownOpen((prev) => !prev)}
-              className="flex text-gray-400 items-center gap-2 text-sm px-4 py-2 hover:text-gray-900 shadow-sm transition cursor-pointer"
+              className="text-gray-400 hover:text-gray-900"
             >
               <User size={47} />
             </button>
-
             {avatarDropdownOpen && (
               <div className="absolute right-0 mt-2 w-88 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
                 <ul className="flex flex-col text-sm">
                   <li>
                     <Link
                       to="/profile"
-                      className="block px-4 py-3 hover:bg-gray-50 transition"
+                      className="block px-4 py-3 hover:bg-gray-50"
                     >
                       View Profile
                     </Link>
@@ -245,7 +231,7 @@ export default function Library() {
                   <li>
                     <Link
                       to="/settings"
-                      className="block px-4 py-3 hover:bg-gray-50 transition"
+                      className="block px-4 py-3 hover:bg-gray-50"
                     >
                       Settings
                     </Link>
@@ -253,7 +239,7 @@ export default function Library() {
                   <li>
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 hover:bg-gray-50 transition text-red-500"
+                      className="w-full text-left px-4 py-3 hover:bg-gray-50 text-red-500"
                     >
                       Log Out
                     </button>
@@ -267,7 +253,7 @@ export default function Library() {
 
       {/* Filters */}
       <div
-        className={`grid md:grid-cols-4 gap-4 mb-10 sticky top-2 bg-white/80 backdrop-blur-lg p-4 rounded-xl transition-shadow z-10 ${
+        className={`grid md:grid-cols-4 gap-4 mb-10 sticky top-2  backdrop-blur-lg p-4 rounded-xl transition-shadow z-10 ${
           scrollY > 10 ? "shadow-lg" : ""
         }`}
       >
@@ -283,9 +269,8 @@ export default function Library() {
             }}
             className="w-full px-4 py-2 pl-10 focus:outline-none text-base rounded-xl border-none"
           />
-
           <Search
-            className="inline items-center absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             size={24}
           />
         </label>
@@ -294,7 +279,8 @@ export default function Library() {
           <select
             value={selectedGenre}
             onChange={(e) => setSelectedGenre(e.target.value)}
-            className="w-full px-4 py-2 pl-10 rounded-xl border border-gray-200 shadow-sm text-base"
+            className="w-full px-4 py-2 pl-10 rounded-xl border 
+            border-[var(--border)] shadow-sm text-base"
           >
             {genres.map((genre) => (
               <option key={genre} value={genre}>
@@ -307,19 +293,19 @@ export default function Library() {
             size={18}
           />
         </label>
-
+            
         <button
           onClick={() =>
             setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
           }
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 shadow-sm hover:bg-gray-100 text-base"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-[var(--border)]  shadow-sm hover:bg-gray-100 text-base"
         >
           {sortOrder === "asc" ? <SortAsc size={16} /> : <SortDesc size={16} />}
           {sortOrder === "asc" ? "↑ Newest First" : "↓ Oldest First"}
         </button>
       </div>
 
-      {/* Clear Filters & Add */}
+      {/* Clear Filters */}
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={handleClearFilters}

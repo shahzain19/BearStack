@@ -28,6 +28,59 @@ body {
 }
 
 
+/* === Theme: Light === */
+html.light {
+  --bg: #ffffff;
+  --text: #000000;
+  --card: #f5f5f5;
+  --border: #dedede;
+  --font: 'Inter', sans-serif;
+}
+
+/* === Theme: Dark === */
+html.dark {
+  --bg: #121212;
+  --text: #e4e4e4;
+  --card: #1f1f1f;
+  --border: #373737;
+  --font: 'Inter', sans-serif;
+}
+
+/* === Theme: Cozy === */
+html.cozy {
+  --bg: #fffaf4;
+  --text: #4b3e2d;
+  --card: #f7e9dc;
+  --border: #e2d2c0;
+  --font: "Baloo 2", cursive;
+}
+
+/* === Theme: Medieval (Improved) === */
+html.medieval {
+  --bg:  #eae0c5;
+  --text: #3b2f1c;
+  --card: #d3c0a6;
+  --border: #ffeccd;
+  --accent: #5c3d1b;
+  --highlight: #c9a96b;
+  --ink-black: #1f140a;
+  --deep-red: #7a2e1b;
+  --emerald: #3a5f48;
+  --shadow: #2c2415;
+  --font: 'MedievalSharp', serif;
+}
+
+
+/* === Global Body Styles === */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+
 .glass-navbar {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);

@@ -32,14 +32,17 @@ export default function Events() {
   }, []);
 
   return (
-    <main className="font-[Inter] min-h-screen px-4 py-20 sm:px-8">
+    <main
+      className="min-h-screen px-4 py-20 sm:px-8
+    text-[var(--text)]"
+    >
       <div className="max-w-7xl mx-auto">
         {/* Heading */}
         <header className="text-center mb-16">
-          <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+          <h1 className="text-5xl font-extrabold tracking-tight mb-4">
             Upcoming Events
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg max-w-2xl mx-auto">
             Beautifully designed moments waiting to be experienced.
           </p>
         </header>
@@ -67,7 +70,7 @@ export default function Events() {
                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" />
-                    <span className="absolute bottom-4 left-4 bg-white/90 text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full z-20 shadow-sm backdrop-blur-sm">
+                    <span className="absolute bottom-4 left-4 bg-white/90 text-xs font-semibold px-4 py-1.5 rounded-full z-20 shadow-sm backdrop-blur-sm">
                       {new Date(event.date).toLocaleDateString(undefined, {
                         day: "numeric",
                         month: "long",
@@ -79,16 +82,16 @@ export default function Events() {
 
                 {/* Card Body */}
                 <div className="p-6">
-                  <h2 className="text-2xl font-semibold text-gray-900 group-hover:text-blue-700 transition-colors duration-300 mb-1">
+                  <h2 className="text-2xl font-semibold group-hover:text-blue-700 transition-colors duration-300 mb-1">
                     {event.title}
                   </h2>
 
-                  <div className="flex items-center gap-1 text-sm text-gray-500 mb-3">
+                  <div className="flex items-center gap-1 text-sm mb-3">
                     <MapPin className="w-4 h-4 text-gray-400" />
                     <span>{event.location}</span>
                   </div>
 
-                  <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
+                  <p className="text-sm leading-relaxed line-clamp-3">
                     {event.description}
                   </p>
                 </div>

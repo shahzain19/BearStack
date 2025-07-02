@@ -29,7 +29,7 @@ export default function BookCard({ book, className = "" }: BookCardProps) {
       to={`/book/${book.id}`}
       whileHover={{ y: -6, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 220, damping: 18 }}
-      className="group block bg-white px-5 pt-5 pb-4 rounded-3xl shadow-sm hover:shadow-md transition focus:outline-none focus-visible:ring-4 focus-visible:ring-bearBrown/30"
+      className="group block px-5 pt-5 pb-4 rounded-3xl hover:shadow-md transition glass"
     >
       <BookCover
         book={book}
