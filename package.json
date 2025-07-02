@@ -33,6 +33,7 @@
     "framer-motion": "^12.19.0",
     "gsap": "^3.13.0",
     "highlight.js": "^11.11.1",
+    "howler": "^2.2.4",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.522.0",
     "obscenity": "^0.4.4",

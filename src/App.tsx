@@ -47,6 +47,15 @@ function AnalyticsTracker() {
 }
 
 export default function App() {
+  useEffect(() => {
+    const unlockAudio = () => {
+      const sfx = new Audio("/FantasyWhoosh.mp3");
+      sfx.play().then(() => sfx.pause());
+      document.removeEventListener("click", unlockAudio);
+    };
+    document.addEventListener("click", unlockAudio);
+  }, []);
+
   return (
     <div className="min-h-screen">
       <Router>
@@ -64,7 +73,14 @@ export default function App() {
           <Route path="/book/:id/comments" element={<BookComments />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetails />} />
-          <Route path="/admin/events" element={<ProtectedRoute><AdminEvents /></ProtectedRoute>} />
+          <Route
+            path="/admin/events"
+            element={
+              <ProtectedRoute>
+                <AdminEvents />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 🔒 Protected Routes */}
           <Route path="/library" element={<Library />} />

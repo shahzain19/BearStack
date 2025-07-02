@@ -15,8 +15,7 @@ import {
 import MagicBadge from "../components/MagicBadge";
 import { Link } from "react-router-dom";
 import CreateShelfBox from "../components/CreateShelfBox";
-
-// ...same imports
+import WizardCardReveal from "../components/MagicCardReveal";
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null);
@@ -24,6 +23,9 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [shelves, setShelves] = useState<any[]>([]);
   const [role, setRole] = useState<string | null>(null);
+  const [showCard, setShowCard] = useState(() => {
+    return localStorage.getItem("wizardCardShown") !== "true";
+  });
 
   useEffect(() => {
     const fetchShelves = async () => {
@@ -78,6 +80,11 @@ export default function Profile() {
     return gradients[hash % gradients.length];
   }
 
+  const handleCardDone = () => {
+    localStorage.setItem("wizardCardShown", "true");
+    setShowCard(false);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
@@ -100,8 +107,9 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen px-6 py-20 font-sans text-gray-900">
+      {showCard && <WizardCardReveal onDone={handleCardDone} />}
+
       <div className="max-w-5xl mx-auto flex flex-col gap-14">
-        {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
           <div className="relative w-28 h-28 shrink-0">
             <div
@@ -125,7 +133,6 @@ export default function Profile() {
               Martin
             </p>
 
-            {/* Badges */}
             {badges.length > 0 && (
               <div className="mt-8">
                 <h3 className="text-xl text-gray-400 font-bold mb-3">
@@ -141,7 +148,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Shelves Section */}
         <div>
           <h2 className="text-xl font-bold mb-4">🧺 Your Shelves</h2>
 
@@ -189,7 +195,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Stats Card */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="rounded-3xl border-2 border-gray-200 bg-white shadow-md hover:shadow-lg transition overflow-hidden">
             <div
@@ -264,7 +269,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Trivia Box */}
         <div className="rounded-2xl bg-[#fffdef] border border-yellow-200 p-6 flex items-start gap-4 shadow-sm hover:shadow-md transition">
           <Sparkles className="w-5 h-5 text-yellow-600 mt-1" />
           <p className="text-sm leading-relaxed text-gray-800">
@@ -273,7 +277,6 @@ export default function Profile() {
           </p>
         </div>
 
-        {/* Admin Callout */}
         {role === "admin" && (
           <div className="rounded-3xl border-4 border-yellow-300 bg-gradient-to-br from-[#fff4d6] via-[#ffe6b3] to-[#ffec99] p-6 shadow-[0_4px_24px_rgba(255,215,0,0.4)] mt-10">
             <h3 className="text-2xl font-bold text-yellow-800 flex items-center gap-3 mb-3">
