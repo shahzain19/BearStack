@@ -95,7 +95,7 @@ export default function BookDetails() {
 
   return (
     <section>
-      <div className="relative mx-auto max-w-5xl p-6 bg-gradient-to-br from-[#FFFDF5] to-[#F9F6EF] rounded-3xl shadow-lg">
+      <div className="relative mx-auto max-w-5xl p-6 bg-[var(--accent)] rounded-3xl shadow-lg">
         {/* back */}
         <div className="flex justify-between items-center mb-6">
           <button
